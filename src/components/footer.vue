@@ -24,8 +24,8 @@
   </v-footer>
 </template>
 <script>
-import Drawer1 from '../components/drawer1.vue'
-export default {Drawer1,
+
+export default {
   name: "Footer",
 
   data: () => ({
