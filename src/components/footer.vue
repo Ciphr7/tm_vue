@@ -1,5 +1,31 @@
 <template>
-   <v-navigation-drawer class="pa-2"  v-model="Drawer2" app>
+ 
+
+
+  <v-sheet dark padless class="blue lighten-1  ">
+    <v-app-bar-nav-icon @click="Drawer2 = !Drawer2"></v-app-bar-nav-icon>
+
+    <v-card class=" mx-auto my-3" color="secondary" width="70%">
+      <v-card-text class=" d-flex justify-center">
+        <v-btn v-for="icon in icons" :key="icon" class="mx-4 white--text" icon>
+          <v-icon class=" mx-auto" size="24px" @click="Drawer2 = !Drawer2">
+            {{ icon }}
+          </v-icon>
+        </v-btn>
+        <v-icon small @click="Drawer2 = !Drawer2">mdi-home</v-icon>
+      </v-card-text>
+
+      <v-card-text class="white--text pt-1 d-flex justify-center">
+        Powered by ProMiles
+      </v-card-text>
+
+      <v-divider></v-divider>
+
+      <v-card-text class="white--text d-flex justify-center">
+        {{ new Date().getFullYear() }} — <strong>TruckMiles 2021</strong>
+      </v-card-text>
+    </v-card>
+      <v-navigation-drawer class="pa-2"  v-model="Drawer2" app>
     <v-list-item >
       <v-list-item-content class="white--text d-flex justify-center">
         <v-img max-height="70" max-width="70" src="../assets/logo.png"></v-img>
@@ -39,33 +65,7 @@
 
    
   </v-navigation-drawer>
-</template>
-<template>
-
-  <v-app-bar dark padless class="blue lighten-1  ">
-    <v-app-bar-nav-icon @click="Drawer2 = !Drawer2"></v-app-bar-nav-icon>
-
-    <v-card class=" mx-auto my-3" color="secondary" width="70%">
-      <v-card-text class=" d-flex justify-center">
-        <v-btn v-for="icon in icons" :key="icon" class="mx-4 white--text" icon>
-          <v-icon class=" mx-auto" size="24px" @click="Drawer1 = !Drawer1">
-            {{ icon }}
-          </v-icon>
-        </v-btn>
-        <v-icon small @click="Drawer1 = !Drawer1">mdi-home</v-icon>
-      </v-card-text>
-
-      <v-card-text class="white--text pt-1 d-flex justify-center">
-        Powered by ProMiles
-      </v-card-text>
-
-      <v-divider></v-divider>
-
-      <v-card-text class="white--text d-flex justify-center">
-        {{ new Date().getFullYear() }} — <strong>TruckMiles 2021</strong>
-      </v-card-text>
-    </v-card>
-  </v-app-bar>
+  </v-sheet>
 </template>
 
 <script>
