@@ -18,14 +18,25 @@
       </v-list-item>
 
       <v-divider class="red lighten-1"></v-divider>
-
+      <myLoc />
       <v-card class="px-2" elevation="9">
-        <v-checkbox
-          pa-5
-          v-model="checkbox"
-          :label="`Set Origin to My GPS Location`"
-        ></v-checkbox>
-
+        <v-container fluid>
+        <v-row>
+          <v-col  cols="9">
+          <v-checkbox
+            pa-5
+            v-model="checkbox"
+            :label="`Set Origin to My GPS Location`"
+          ></v-checkbox>
+          </v-col>
+       
+          <v-col cols-1 >
+          <v-icon class="pr-1" >
+            mdi-access-point
+          </v-icon>
+          </v-col>
+        </v-row>
+        </v-container>
         <v-text-field
           label="Origin"
           :rules="rules"
@@ -119,7 +130,9 @@
 </template>
 
 <script>
+import myLoc from "./UserLocation.vue";
 export default {
+  components: { myLoc },
   name: "Footer",
 
   data: () => ({
