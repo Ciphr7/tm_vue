@@ -19,19 +19,19 @@
 
       <v-divider class="red lighten-1"></v-divider>
       <myLoc />
-      <v-card class="px-2" elevation="9">
+      <v-card class="mx-1 px-1" elevation="9">
         <v-container fluid>
         <v-row>
-          <v-col  cols="9">
+          <v-col  cols="10">
           <v-checkbox
-            pa-5
+            class ='py-1'
             v-model="checkbox"
             :label="`Set Origin to My GPS Location`"
           ></v-checkbox>
           </v-col>
        
-          <v-col cols-1 >
-          <v-icon class="pr-1" >
+          <v-col cols="1" >
+          <v-icon class="py-5" >
             mdi-access-point
           </v-icon>
           </v-col>
