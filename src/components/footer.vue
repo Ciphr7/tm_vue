@@ -19,46 +19,7 @@
 
       <v-divider class="red lighten-1"></v-divider>
       <myLoc />
-      <v-card class="mx-1 px-1" elevation="9">
-        <v-container fluid>
-        <v-row>
-          <v-col  cols="10">
-          <v-checkbox
-            class ='py-1'
-            v-model="checkbox"
-            :label="`Set Origin to My GPS Location`"
-          ></v-checkbox>
-          </v-col>
-       
-          <v-col cols="1" >
-          <v-icon class="py-5" >
-            mdi-access-point
-          </v-icon>
-          </v-col>
-        </v-row>
-        </v-container>
-        <v-text-field
-          label="Origin"
-          :rules="rules"
-          hide-details="auto"
-          class="px-2"
-        ></v-text-field>
-        <v-text-field
-          class="px-2"
-          label="Destination #Dallas, tx"
-        ></v-text-field>
-        <v-btn block>
-          Run Trip
-        </v-btn>
-        <v-card-text>Trip Options</v-card-text>
-        <v-select :items="r_items" filled label="Practical"></v-select>
-        <v-checkbox
-          pa-5
-          v-model="checkbox"
-          :label="`Close Borders`"
-        ></v-checkbox>
-        <v-checkbox pa-5 v-model="checkbox" :label="`Avoid Toll`"></v-checkbox>
-      </v-card>
+     
     </v-navigation-drawer>
 
     <v-navigation-drawer
@@ -136,8 +97,12 @@ export default {
   name: "Footer",
 
   data: () => ({
+   
+    
     Drawer2: false,
-    Drawer1: null,
+    Drawer1: true,
+
+    
 
     r_items: ["practical", "Shortest", "Interstate"],
 

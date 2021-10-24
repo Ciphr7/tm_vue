@@ -26,13 +26,7 @@ import Footer from "./components/footer.vue";
 export default {
   components: { gmapsMap, Footer },
   data: () => ({
-    r_items: ["practical", "Shortest", "Interstate"],
-
-    right: true,
-    rules: [
-      (value) => !!value || "Required.",
-      (value) => (value || "").length <= 20 || "Max 20 characters",
-    ],
+ 
   }),
 };
 </script>
