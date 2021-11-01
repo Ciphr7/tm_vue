@@ -48,6 +48,7 @@
       <v-divider class="red lighten-1"></v-divider>
 
       <v-card class="px-2" elevation="9">
+        <my-checkbox />
         <v-text-field
           label="input label"
           :rules="rules"
@@ -92,8 +93,10 @@
 
 <script>
 import myLoc from "./UserLocation.vue";
+import myCheckbox from "./checkbox.vue";
+
 export default {
-  components: { myLoc },
+  components: { myLoc, myCheckbox },
   name: "Footer",
 
   data: () => ({
