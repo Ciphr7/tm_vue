@@ -1,93 +1,110 @@
 <template>
-    <div id="add-blog">
-        <h2>Add a New Blog Post</h2>
-        <form v-if="!submitted">
-            <label>Blog Title:</label>
-            <input type="text" v-model.lazy="blog.title" required />
-            <label>Blog Content:</label>
-            <textarea v-model.lazy.trim="blog.content"></textarea>
-            <div id="checkboxes">
-                <p>Blog Categories:</p>
-                <label>Ninjas</label>
-                <input type="checkbox" value="ninjas" v-model="blog.categories" />
-                <label>Wizards</label>
-                <input type="checkbox" value="wizards" v-model="blog.categories" />
-                <label>Mario</label>
-                <input type="checkbox" value="mario" v-model="blog.categories" />
-                <label>Cheese</label>
-                <input type="checkbox" value="cheese" v-model="blog.categories" />
-            </div>
-            <label>Author:</label>
-            <select v-model="blog.author">
-                <!-- <option v-for="author in authors">{{ author }}</option> -->
-            </select>
-            <hr />
-            <button v-on:click.prevent="post">Add Blog</button>
-        </form>
-        <div v-if="submitted">
-            <h3>Thanks for adding your post</h3>
-        </div>
-    </div>
+  <div>
+    <input
+      type="text"
+      placeholder="enter user name"
+      v-model="signupForm.username"
+    />
+    <br />
+    <br />
+    <input
+      type="password"
+      placeholder="enter password"
+      v-model="signupForm.password"
+    />
+    <br />
+    <br />
+    <p>Hobbies</p>
+
+    <input
+      type="checkbox"
+      value="travel"
+      id="travel"
+      v-model="signupForm.hobbies"
+    />
+    <label for="travel">Travel</label> <br />
+    <br />
+    <input
+      type="checkbox"
+      value="sports"
+      id="sports"
+      v-model="signupForm.hobbies"
+    />
+    <label for="sports">Sports</label>
+    <br />
+    <br />
+    <p>Gender</p>
+
+    <input type="radio" value="male" id="male" v-model="signupForm.gender" />
+    <label for="male">Male</label> <br />
+    <br />
+    <input
+      type="radio"
+      value="female"
+      id="female"
+      v-model="signupForm.gender"
+    />
+    <label for="female">female</label>
+    <button v-on:click="signupUser">Sign Up</button>
+    <br />
+    <br />
+  </div>
 </template>
 
 <script>
 // Imports
 export default {
-    name: "myCheckbox",
-    data () {
-        return {
-            blog: {
-                title: '',
-                content: '',
-                categories: [],
-                author: ''
-            },
-            authors: ['The Net Ninja', 'The Angular Avenger', 'The Vue Vindicator'],
-            submitted: false
-        }
+  name: "myCheckbox",
+  data() {
+    return {
+      signupForm: {
+        username: null,
+        password: null,
+        hobbies: [],
+        gender: null,
+      },
+    };
+  },
+  methods: {
+    signupUser() {
+      console.log("Hi !", this.signupForm);
     },
-    methods: {
-        post: function(){
-            this.$http.post('https://nn-vue-playlist.firebaseio.com/posts.json', this.blog).then(function(data){
-                console.log(data);
-                this.submitted = true;
-            });
-        }
-    }
-}
+  },
+};
 </script>
 
 <style scoped>
-#add-blog *{
-    box-sizing: border-box;
+#add-blog * {
+  box-sizing: border-box;
 }
-#add-blog{
-    margin: 20px auto;
-    max-width: 500px;
+#add-blog {
+  margin: 20px auto;
+  max-width: 500px;
 }
-label{
-    display: block;
-    margin: 20px 0 10px;
+label {
+  display: block;
+  margin: 20px 0 10px;
 }
-input[type="text"], textarea{
-    display: block;
-    width: 100%;
-    padding: 8px;
+input[type="text"],
+textarea {
+  display: block;
+  width: 100%;
+  padding: 8px;
 }
-#preview{
-    padding: 10px 20px;
-    border: 1px dotted #ccc;
-    margin: 30px 0;
+#preview {
+  padding: 10px 20px;
+  border: 1px dotted #ccc;
+  margin: 30px 0;
 }
-h3{
-    margin-top: 10px;
+h3 {
+  margin-top: 10px;
 }
-#checkboxes input{
-    display: inline-block;
-    margin-right: 10px;
+#checkboxes input {
+  display: inline-block;
+  margin-right: 10px;
 }
-#checkboxes label{
-    display: inline-block;
-    margin-top: 0;
+#checkboxes label {
+  display: inline-block;
+  margin-top: 0;
 }
 </style>
