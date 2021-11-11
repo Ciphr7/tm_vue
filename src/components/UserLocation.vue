@@ -4,13 +4,14 @@
       <v-container fluid>
         <v-row>
           <v-col cols="10">
-            <v-checkbox
+            <v-switch
               id="SetToCurrentLocation"
               class="py-1"
+              color="red"
               v-model="checkbox1"
               :label="`Set Origin to My GPS Location`"
               v-on:change="setOriginToCurrentLocation()"
-            ></v-checkbox>
+            ></v-switch>
           </v-col>
 
           <v-col cols="1">
@@ -18,6 +19,7 @@
           </v-col>
         </v-row>
       </v-container>
+      <autoComplete />
       <v-text-field
         label="Origin"
         :rules="rules"
@@ -30,19 +32,21 @@
       <v-btn block> Run Trip </v-btn>
       <v-card-text>Trip Options</v-card-text>
       <v-select :items="r_items" filled label="Practical"></v-select>
-      <v-checkbox
-        pa-5
-        v-model="checkbox2"
-        :label="`Close Borders`"
-      ></v-checkbox>
-      <v-checkbox class=" p-0 m-0 " v-model="checkbox3" :label="`Avoid Toll`"></v-checkbox>
+      <v-switch pa-5 v-model="checkbox2" :label="`Close Borders`"></v-switch>
+      <v-switch
+        class="p-0 m-0"
+        v-model="checkbox3"
+        :label="`Avoid Toll`"
+      ></v-switch>
     </v-card>
   </div>
 </template>
 
 <script>
+import autoComplete from "./autoComplete.vue"
 export default {
-  name: "myLoc",
+   components: {autoComplete },
+  name: "myLoc", 
   data: () => ({
     myPos: "",
     r_items: ["practical", "Shortest", "Interstate"],
@@ -58,7 +62,7 @@ export default {
   }),
   methods: {
     setOriginToCurrentLocation() {
-      var b = this.checkbox1 == true;
+      const b = this.checkbox1 == true;
       var self = this;
 
       if (!b) {
