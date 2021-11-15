@@ -15,6 +15,7 @@
                   v-model="startingZip"
                 />
                 <span class="city-span">{{ startingCity }}</span>
+                <span class="city-span">{{ startingZip }}</span>
               </div>
               <div class="col-md-6">
                 <input
@@ -46,79 +47,67 @@
 </template>
 
 <script>
-import axios from 'axios'
+import axios from "axios";
 export default {
- 
   name: "autoComplete",
-  components: {
-  
-  },
- 
+  components: {},
+
   data() {
-    return {
-      
-      startingZip: 'this.itemZip',
-      url : 'https://prime.promiles.com/WebAPI/api/ValidateLocation?locationText',
-  apikey : 'bU03MSs2UjZIS21HMG5QSlIxUTB4QT090',
-      
-    };
-  },
-  methods: {
-          data: {
-        startingZip: '',
-        startingCity: '',
-        endingZip: '',
-        endingCity: ''
-      },
-      watch: {
-        startingZip: function() {
-          this.startingCity = ''
-          if (this.startingZip.length == 3) {
-            this.lookupStartingZip()
-          }
-        },
-        endingZip: function() {
-          this.endingCity = ''
-          if (this.endingZip.length == 3) {
-            this.lookupEndingZip()
-          }
-        }
-      },
-      methods: {
-          
-        lookupStartingZip: function() {
-          var self = this
-          self.startingCity = "Searching..."
-          axios.get(self.url + self.startingZip + self.apikey)
-                .then(function (response) {
-                  self.startingCity = response.data.city + ', ' + response.data.state
-                })
-                .catch(function () {
-                  self.startingCity = "Invalid Zipcode"
-                });
-                
-            
-           
-        }, 
-        lookupEndingZip: function() {
-          var self = this
-          self.endingCity = "Searching..."
-          axios.get(self.url + self.endingZip + self.apikey)
-                .then(function (response) {
-                  self.endingCity = response.data.city + ', ' + response.data.state
-                })
-                .catch(function () {
-                  self.endingCity = "Invalid Zipcode"
-                })
-        },
-          
+      return {
+    startingZip: '',
+    startingCity: '',
+    endingZip: "",
+    endingCity: "",
+    url: "https://prime.promiles.com/WebAPI/api/ValidateLocation?locationText=",
+    apikey: "&apikey=bU03MSs2UjZIS21HMG5QSlIxUTB4QT090",
+    data: []
+   } },
+  watch: {
+    startingZip: function () {
+      this.startingCity = "";
+      if (this.startingZip.length == 5) {
+        this.lookupStartingZip();
       }
-    
-  }
-  };
+    },
+    endingZip: function () {
+      this.endingCity = "";
+      if (this.endingZip.length == 3) {
+        this.lookupEndingZip();
+      }
+    },
+  },
 
-  
-
+  methods: {
+    lookupStartingZip: function () {
+      var self = this;
+      self.startingCity = "Searching...";
+      axios
+        .get(self.url + self.startingZip + self.apikey)
+        .then (this.response.data.map(item =>{
+          console.log(response)
+          return[item.city, item.state]
+          
+        },
+        self.startingCity = item.city + item.state,
+          console.log(response.city))) 
+        .catch(function () {
+          self.startingCity = "Invalid Zipcode";
+        });
+    },
+    lookupEndingZip: function () {
+      var self = this;
+      self.endingCity = "Searching...";
+      axios
+        .get(self.url + self.endingZip + self.apikey)
+        .then(function (response) {
+          self.endingCity = response.data.city + ", " + response.data.state;
+        })
+        .catch(function () {
+          self.endingCity = "Invalid Zipcode";
+        });
+    },
+  },
+};
 </script> 
 
  <style>
