@@ -47,10 +47,15 @@
 </template>
 
 <script>
+import Vue from 'vue'
 import axios from "axios";
+const state = Vue.observable({
+    locations:[]
+})
 export default {
   name: "autoComplete",
   components: {},
+   get state(){ return state },
 
   data() {
       return {
@@ -60,52 +65,63 @@ export default {
     endingCity: "",
     url: "https://prime.promiles.com/WebAPI/api/ValidateLocation?locationText=",
     apikey: "&apikey=bU03MSs2UjZIS21HMG5QSlIxUTB4QT090",
-    data: []
+  
    } },
   watch: {
     startingZip: function () {
       this.startingCity = "";
       if (this.startingZip.length == 5) {
-        this.lookupStartingZip();
+        this.getLocations();
       }
     },
     endingZip: function () {
       this.endingCity = "";
       if (this.endingZip.length == 3) {
-        this.lookupEndingZip();
+        this.getLocations();
       }
     },
   },
 
   methods: {
-    lookupStartingZip: function () {
-      var self = this;
-      self.startingCity = "Searching...";
-      axios
-        .get(self.url + self.startingZip + self.apikey)
-        .then (this.response.data.map(item =>{
-          console.log(response)
-          return[item.city, item.state]
-          
-        },
-        self.startingCity = item.city + item.state,
-          console.log(response.city))) 
-        .catch(function () {
-          self.startingCity = "Invalid Zipcode";
-        });
+     async getLocations(startingZip){
+        try{
+            const res = await axios.get(`this.url + ${startingZip} + this.apikey`)
+            state.locations = res.data
+            console.log(this.state.locations)
+            // state.lastPage = res.last_page
+            // state.firstPage = res.first_page
+            // state.total = res.total
+        }catch(error){ /*Notify user of error*/ }
     },
-    lookupEndingZip: function () {
-      var self = this;
-      self.endingCity = "Searching...";
-      axios
-        .get(self.url + self.endingZip + self.apikey)
-        .then(function (response) {
-          self.endingCity = response.data.city + ", " + response.data.state;
-        })
-        .catch(function () {
-          self.endingCity = "Invalid Zipcode";
-        });
-    },
+    // lookupStartingZip: function () {
+    //   var self = this;
+    //   self.startingCity = "Searching...";
+    //   axios
+    //     .get(self.url + self.startingZip + self.apikey)
+    //     .then (this.response.data.map(item =>{
+         
+    //       return[item.city, item.state]
+    //     // },
+    //     // self.startingCity = this.item.city + this.item.state,
+    //     //   console.log(response.city))) 
+    //     // .catch(function () {
+    //     //   self.startingCity = "Invalid Zipcode";
+    //     // });
+        
+    //     )
+    //     )},
+    // lookupEndingZip: function () {
+    //   var self = this;
+    //   self.endingCity = "Searching...";
+    //   axios
+    //     .get(self.url + self.endingZip + self.apikey)
+    //     .then(function (response) {
+    //       self.endingCity = response.data.city + ", " + response.data.state;
+    //     })
+    //     .catch(function () {
+    //       self.endingCity = "Invalid Zipcode";
+    //     });
+    // },
   },
 };
 </script> 
