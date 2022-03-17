@@ -19,7 +19,9 @@
           </v-col>
         </v-row>
       </v-container>
+
       <autoComplete />
+      
       <v-text-field
         label="Origin"
         :rules="rules"
@@ -29,7 +31,9 @@
         >{myPos}</v-text-field
       >
       <v-text-field class="px-2" label="Destination #Dallas, tx"></v-text-field>
+
       <v-btn block> Run Trip </v-btn>
+
       <v-card-text>Trip Options</v-card-text>
       <v-select :items="r_items" filled label="Practical"></v-select>
       <v-switch pa-5 v-model="checkbox2" :label="`Close Borders`"></v-switch>

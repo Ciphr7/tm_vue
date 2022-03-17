@@ -1,22 +1,75 @@
 <template>
-  <div id="autocomplete">
+  <div id="autoComplete">
     <div class="container">
       <div class="row">
         <div class="col-md-6 col-md-offset-3">
           <div class="lead-form">
-            <h1 class="text-center">Fill Out This Form</h1>
-            <hr />
+            <h4 class="text-center">Fill Out This Form</h4>
+         
+
             <div class="row">
               <div class="col-md-6">
-                <input
-                  type="text"
-                  class="form-control"
-                  placeholder="Starting Zip"
-                  v-model="startingZip"
-                />
-                <span class="city-span">{{ startingCity }}</span>
-                <span class="city-span">{{ startingZip }}</span>
+              
+
+                <section class="dropdown-wrapper">
+                  <div @click="isVisible = !isVisible" class="selected-item">
+                    <span v-if="selectedItem">{{selectedItem.City +","+ selectedItem.State + ", " + selectedItem.PostalCode}}</span>
+                    <span v-else>Start Location</span>
+                    <svg
+                      :class="isVisible ? 'dropdown' : ''"
+                      class="drop-down-icon"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      width="24"
+                      height="24"
+                    >
+                      <path fill="none" d="M0 0h24v24H0z" />
+                      <path d="M12 8l6 6H6z" />
+                    </svg>
+                  </div>
+
+                  <div
+                    :class="isVisible ? 'visible' : 'invisible'"
+                    class="dropdown-popover"
+                  >
+                    <input
+                    
+                      v-model="startingZip"
+                      type="text"
+                      placeholder="Search for Location"
+                      
+                    />
+
+                    <br />
+                    
+                    <span v-if="results.length == 0">No Data Available</span>
+                    <div class="options">
+                      <ul>
+                        <li
+                          @click="selectItem(Location)"
+                          v-for="(Location, index) in results"
+                          :key="`City-${index}`"
+                        >
+                          {{ Location.City + ", " + Location.State + ", " + Location.PostalCode  }}
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </section>
+
+              
+
+            
+                <!-- <span class="city-span">{{ this.results}}</span> -->
+                <!-- <ul>
+                  <li let item of (results | async)></li>
+                </ul> -->
+              <hr />
               </div>
+
+            </div>
+           
+            <!-- <div class="row">
               <div class="col-md-6">
                 <input
                   type="text"
@@ -26,14 +79,8 @@
                 />
                 <span class="city-span">{{ endingCity }}</span>
               </div>
-            </div>
-            <div class="row">
-              <div class="col-md-12">
-                <button class="btn btn-primary btn-block" id="submit-form">
-                  Submit
-                </button>
-              </div>
-            </div>
+            </div> -->
+           
           </div>
           <!-- end of .lead-form -->
         </div>
@@ -47,92 +94,157 @@
 </template>
 
 <script>
-import Vue from 'vue'
-import axios from "axios";
-const state = Vue.observable({
-    locations:[]
-})
 export default {
   name: "autoComplete",
   components: {},
-   get state(){ return state },
 
   data() {
-      return {
-    startingZip: '',
-    startingCity: '',
-    endingZip: "",
-    endingCity: "",
-    url: "https://prime.promiles.com/WebAPI/api/ValidateLocation?locationText=",
-    apikey: "&apikey=bU03MSs2UjZIS21HMG5QSlIxUTB4QT090",
-  
-   } },
+    return {
+      startingZip: "",
+      startingCity: "",
+      endingZip: "",
+      endingCity: "",
+      url: "https://prime.promiles.com/WebAPI/api/ValidateLocation?locationText=",
+      apikey: "&apikey=bU03MSs2UjZIS21HMG5QSlIxUTB4QT090",
+      results: [],
+      selectedItem: null,
+      isVisible: false,
+      searchQuery: "",
+      Location:[],
+      timeout: null,
+      debounceMilliseconds: 250,
+    };
+  },
   watch: {
     startingZip: function () {
-      this.startingCity = "";
+    
       if (this.startingZip.length == 5) {
         this.getLocations();
       }
     },
-    endingZip: function () {
-      this.endingCity = "";
-      if (this.endingZip.length == 3) {
-        this.getLocations();
-      }
-    },
+  },
+  computed: {
+    
   },
 
   methods: {
-     async getLocations(startingZip){
-        try{
-            const res = await axios.get(`this.url + ${startingZip} + this.apikey`)
-            state.locations = res.data
-            console.log(this.state.locations)
-            // state.lastPage = res.last_page
-            // state.firstPage = res.first_page
-            // state.total = res.total
-        }catch(error){ /*Notify user of error*/ }
+    async getLocations() {
+      clearTimeout(this.timeout);
+      this.timeout = setTimeout(() => {
+      fetch(this.url + this.startingZip + this.apikey)
+      
+        .then((res) => res.json())
+        .then((json) => {
+          console.log(json);
+          this.results = json;
+        });
     },
-    // lookupStartingZip: function () {
-    //   var self = this;
-    //   self.startingCity = "Searching...";
-    //   axios
-    //     .get(self.url + self.startingZip + self.apikey)
-    //     .then (this.response.data.map(item =>{
-         
-    //       return[item.city, item.state]
-    //     // },
-    //     // self.startingCity = this.item.city + this.item.state,
-    //     //   console.log(response.city))) 
-    //     // .catch(function () {
-    //     //   self.startingCity = "Invalid Zipcode";
-    //     // });
-        
-    //     )
-    //     )},
-    // lookupEndingZip: function () {
-    //   var self = this;
-    //   self.endingCity = "Searching...";
-    //   axios
-    //     .get(self.url + self.endingZip + self.apikey)
-    //     .then(function (response) {
-    //       self.endingCity = response.data.city + ", " + response.data.state;
-    //     })
-    //     .catch(function () {
-    //       self.endingCity = "Invalid Zipcode";
-    //     });
-    // },
+ this.debounceMilliseconds);
+    },
+    selectItem(Location) {
+      this.selectedItem = Location;
+      this.isVisible = false;
+    },
+    filteredLoctions() {
+      return this.userArray.filter((Location) => {
+        return Object.values(Location);
+      });
+    },
+
   },
 };
 </script> 
 
- <style>
+ <style scoped lang="scss">
 #auto-complete {
   font-family: "Avenir", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #fafafa;
+  text-align: start;
+  color: #be1f1f;
   margin-top: 0px;
+}
+.form-control {
+  background: #2c1515;
+}
+
+.dropdown-wrapper {
+  max-width: 350px;
+  position: absolute;
+  margin: 5 auto;
+    z-index: 1;
+
+  .selected-item {
+    height: 40px;
+    border-bottom: 2px solid rgb(228, 61, 61);
+    border-radius: 5px;
+    padding: 5px 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 18px;
+    font-weight: 400;
+
+    .drop-down-icon {
+      transform: rotate(0deg);
+      transition: all 0.4s ease;
+      &.dropdown {
+        transform: rotate(180deg);
+      }
+    }
+  }
+  .dropdown-popover {
+   
+    border: 2px solid lightgray;
+    top: 46px;
+    left: 0;
+    right: 0;
+    background-color: rgb(185, 39, 39);
+    max-width: 100%;
+    padding: 10px;
+    visibility: hidden;
+    transition: all 0.5s ease-in-out;
+    max-height: 0px;
+    overflow: hidden;
+    &.visible {
+      max-height: 450px;
+      visibility: visible;
+    }
+  }
+  input {
+    width: 90%;
+    height: 30px;
+    border: 2px solid lightgray;
+    font-size: 16px;
+    padding-left: 8px;
+    margin-bottom: 5px;
+  }
+
+  .options {
+    width: 100%;
+
+    ul {
+      list-style: none;
+      text-align: left;
+      padding-left: 8px;
+      max-height: 200px;
+      overflow-y: scroll;
+      border: 1px solid lightgray;
+
+      li {
+        width: 100%;
+        border-bottom: 1px solid lightgray;
+        padding: 10px;
+        background-color: #241313;
+        cursor: pointer;
+        font-size: 16px;
+        &:hover {
+          background: #70878a;
+          color: #fff;
+          font-weight: bold;
+        }
+      }
+    }
+  }
 }
 </style>
