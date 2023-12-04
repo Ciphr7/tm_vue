@@ -1,7 +1,7 @@
 <template>
   <v-app id="inspire">
     <v-app-bar class="red lighten-1 white--text  d-flex justify-center " app>
-      <v-toolbar-title>TruckMiles 2021</v-toolbar-title>
+      <v-toolbar-title>TruckMiles 2024 <span className='font-extralight'>&reg;</span></v-toolbar-title>
     </v-app-bar>
 
     <v-main>

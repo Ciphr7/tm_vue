@@ -19,6 +19,7 @@
 
       <v-divider class="red lighten-1"></v-divider>
       <myLoc />
+      <runTrip />
      
     </v-navigation-drawer>
 
@@ -79,12 +80,13 @@
 
         <v-card-text class="white--text pt-1 d-flex justify-center">
           Powered by ProMiles
+          
         </v-card-text>
 
         <v-divider></v-divider>
 
         <v-card-text class="white--text d-flex justify-center">
-          {{ new Date().getFullYear() }} — <strong>TruckMiles 2021</strong>
+         <strong>TruckMiles -</strong>{{ new Date().getFullYear() }}
         </v-card-text>
       </v-footer>
     </v-card>
@@ -94,9 +96,10 @@
 <script>
 import myLoc from "./UserLocation.vue";
 import myCheckbox from "./checkbox.vue";
+import runTrip from "./RunTrip.vue";
 
 export default {
-  components: { myLoc, myCheckbox },
+  components: { myLoc, myCheckbox, runTrip },
   name: "Footer",
 
   data: () => ({
