@@ -25,8 +25,6 @@ import Footer from "./components/footer.vue";
 
 export default {
   components: { gmapsMap, Footer },
-  data: () => ({
- 
-  }),
+  
 };
 </script>

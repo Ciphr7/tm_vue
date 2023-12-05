@@ -19,7 +19,7 @@
 
       <v-divider class="red lighten-1"></v-divider>
       <myLoc />
-      <runTrip />
+      <testRunTrip />
      
     </v-navigation-drawer>
 
@@ -96,20 +96,15 @@
 <script>
 import myLoc from "./UserLocation.vue";
 import myCheckbox from "./checkbox.vue";
-import runTrip from "./RunTrip.vue";
+import testRunTrip from "./RunTrip.vue";
+
 
 export default {
-  components: { myLoc, myCheckbox, runTrip },
+  components: { myLoc, myCheckbox, testRunTrip},
   name: "Footer",
-
   data: () => ({
-   
-    
     Drawer2: false,
     Drawer1: true,
-
-    
-
     r_items: ["practical", "Shortest", "Interstate"],
 
     right: true,
@@ -118,6 +113,7 @@ export default {
       (value) => (value || "").length <= 20 || "Max 20 characters",
     ],
     icons: ["mdi-truck", "mdi-map", "mdi-check"],
+  
   }),
 };
 </script>

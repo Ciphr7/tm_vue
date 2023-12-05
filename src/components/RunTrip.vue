@@ -1,44 +1,69 @@
 <template>
     <div>
-      <v-btn class="red--text" @click="runTrip">Run Trip</v-btn>
+      <v-btn class="red--text" @click="testRunTrip">Run Trip</v-btn>
     </div>
   </template>
   
   <script>
-  import axios from 'axios';
+  import { tmAPIKey } from './tmAPIKey';
   
   export default {
     methods: {
-      runTrip() {
-        const origin = { city: "Destin", state: "FL", postalCode: "32540" };
-        const destination = { city: "Las Vegas", state: "NV", postalCode: "88901" };
-        const tripLegs = [origin, destination];
-  
-        const tripData = {
-          tripLegs,
-          routingMethod: "PRACTICAL",
-          borderOpen: true,
-          avoidTollRoads: false,
-          vehicleType: "TRACTOR3AXLETRAILER2AXLE",
-          getDrivingDirections: true,
-          getMapPoints: true,
-          getStateMileage: true,
-          getTripSummary: true,
-          mpg: 6
-        };
-  
-        axios.post('https://prime.promiles.com/WebAPI/Scripts/PRIME/PRIMEWebAPI.ashx?apikey=Nm1FY1FtQ2ZMeWoySU5oeElyMnY2Zz090', tripData)
-          .then(response => {
-            // Handle the response here
-            console.log(response.data);
-          })
-          .catch(error => {
-            // Handle errors here
-            console.error(error);
-          });
-      }
+      testRunTrip() {
+      const trip = {
+        "TripLegs": [
+          {
+            "Address": "1900 Texas Avenue",
+            "City": "Bridge City",
+            "State": "TX",
+            "PostalCode": "77611",
+            "Latitude": "",
+            "Longitude": "",
+            "LocationText": ""
+          },
+          {
+            "Address": "",
+            "City": "",
+            "State": "",
+            "PostalCode": "",
+            "Latitude": 44.977415,
+            "Longitude": -93.264847,
+            "LocationText": ""
+          }
+        ],
+        "UnitMPG": 6,
+        "RoutingMethod": 0,
+        "BorderOpen": true,
+        "AvoidTollRoads": false,
+        "VehicleType": 7,
+        "AllowRelaxRestrictions": true,
+        "GetDrivingDirections": true,
+        "GetMapPoints": false,
+        "GetStateMileage": true,
+        "GetTripSummary": true,
+        "GetTruckStopsOnRoute": true,
+        "GetFuelOptimization": true,
+        "apikey": tmAPIKey,
+      };
+
+      fetch('http://prime.promiles.com/WebAPI/api/RunTrip', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(trip),
+      })
+      .then(response => response.json())
+      .then(data => {
+        console.log(JSON.stringify(data));
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+    },
+  },
+
     }
-  };
   </script>
   
   <style scoped>
