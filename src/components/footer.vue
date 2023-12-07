@@ -18,7 +18,7 @@
       </v-list-item>
 
       <v-divider class="red lighten-1"></v-divider>
-      <myLoc />
+      <userLoc />
       <testRunTrip />
      
     </v-navigation-drawer>
@@ -94,13 +94,13 @@
 </template>
 
 <script>
-import myLoc from "./UserLocation.vue";
+import userLoc from "./UserLocation.vue";
 import myCheckbox from "./checkbox.vue";
 import testRunTrip from "./RunTrip.vue";
 
 
 export default {
-  components: { myLoc, myCheckbox, testRunTrip},
+  components: { userLoc, myCheckbox, testRunTrip},
   name: "Footer",
   data: () => ({
     Drawer2: false,

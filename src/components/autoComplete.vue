@@ -69,7 +69,7 @@
 
             </div>
            
-            <!-- <div class="row">
+            <div class="row">
               <div class="col-md-6">
                 <input
                   type="text"
@@ -79,7 +79,7 @@
                 />
                 <span class="city-span">{{ endingCity }}</span>
               </div>
-            </div> -->
+            </div>
            
           </div>
           <!-- end of .lead-form -->
