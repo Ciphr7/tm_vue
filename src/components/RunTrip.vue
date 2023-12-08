@@ -13,22 +13,22 @@
       const trip = {
         "TripLegs": [
           {
-            "Address": "1900 Texas Avenue",
-            "City": "Bridge City",
-            "State": "TX",
-            "PostalCode": "77611",
+            "Address": "",
+            "City": "",
+            "State": "",
+            "PostalCode": "",
             "Latitude": "",
             "Longitude": "",
-            "LocationText": ""
+            "LocationText": this.MyLoc
           },
           {
             "Address": "",
             "City": "",
             "State": "",
             "PostalCode": "",
-            "Latitude": 44.977415,
-            "Longitude": -93.264847,
-            "LocationText": ""
+            "Latitude": "",
+            "Longitude": "",
+            "LocationText": this.myDestination
           }
         ],
         "UnitMPG": 6,

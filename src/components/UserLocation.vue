@@ -93,10 +93,10 @@
       </div>
     </section>
 
-      <div class="px-2 my-5">
+      <div class="px-2 my-15">
       
     
-      <v-btn block> Run Trip </v-btn>
+      <v-btn @click="testRunTrip"> Run Trip </v-btn>
 
       <v-card-text>Trip Options</v-card-text>
       <v-select :items="r_items" filled label="Practical"></v-select>
@@ -113,6 +113,7 @@
 
 <script>
 //import autoComplete from "./autoComplete.vue"
+import { tmAPIKey } from './tmAPIKey';
 export default {
   components: {},
   name: "userLoc",
@@ -237,6 +238,60 @@ export default {
         return Object.values(Location);
       });
     },
+    testRunTrip() {
+      const trip = {
+        "TripLegs": [
+          {
+            "Address": "",
+            "City": "",
+            "State": "",
+            "PostalCode": "",
+            "Latitude": "",
+            "Longitude": "",
+            "LocationText":this.myPos
+          },
+          {
+            "Address": "",
+            "City": "",
+            "State": "",
+            "PostalCode": "",
+            "Latitude": "",
+            "Longitude": "",
+            "LocationText": this.destinationPos
+          }
+        ],
+        "UnitMPG": 6,
+        "RoutingMethod": 0,
+        "BorderOpen": true,
+        "AvoidTollRoads": false,
+        "VehicleType": 7,
+        "AllowRelaxRestrictions": true,
+        "GetDrivingDirections": true,
+        "GetMapPoints": false,
+        "GetStateMileage": true,
+        "GetTripSummary": true,
+        "GetTruckStopsOnRoute": true,
+        "GetFuelOptimization": true,
+        "apikey": tmAPIKey,
+      };
+
+      fetch('http://prime.promiles.com/WebAPI/api/RunTrip', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(trip),
+      })
+      .then(response => response.json())
+      .then(data => {
+        console.log(this.myPos)
+        console.log(JSON.stringify(data));
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+    },
+
   },
 };
 </script>
