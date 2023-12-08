@@ -1,5 +1,6 @@
 <template>
   <div>
+   
     <v-card class="mt-2 mx-1 px-1" elevation="9">
       <v-container fluid>
         <v-row>
@@ -21,70 +22,80 @@
       </v-container>
 
       <section class="dropdown-wrapper">
-        <div @click="isVisible = !isVisible" class="selected-item">
-          <span v-if="selectedItem">{{
-            selectedItem.City +
-              "," +
-              selectedItem.State +
-              ", " +
-              selectedItem.PostalCode
-          }}</span>
-          <span v-else>Start Location</span>
-          <svg
-            :class="isVisible ? 'dropdown' : ''"
-            class="drop-down-icon"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            width="24"
-            height="24"
-          >
-            <path fill="none" d="M0 0h24v24H0z" />
-            <path d="M12 8l6 6H6z" />
-          </svg>
-        </div>
-
-        <div
-          :class="isVisible ? 'visible' : 'invisible'"
-          class="dropdown-popover"
+      <div @click="isVisible = !isVisible" class="selected-item">
+        <span v-if="selectedItem">{{
+          selectedItem.City +
+          "," +
+          selectedItem.State +
+          ", " +
+          selectedItem.PostalCode
+        }}</span>
+        <span v-else>Start Location</span>
+        <svg
+          :class="isVisible ? 'dropdown' : ''"
+          class="drop-down-icon"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          width="24"
+          height="24"
         >
-        
-          <v-text-field
-            label="Origin"
-            :rules="rules"
-            hide-details="auto"
-            class="px-2"
-            v-model="myPos"
-            value="myPos"
-            type="text"
-            placeholder="Search for Location"
-          ></v-text-field>
+          <path fill="none" d="M0 0h24v24H0z" />
+          <path d="M12 8l6 6H6z" />
+        </svg>
+      </div>
 
-          <br />
+      <div
+        :class="isVisible ? 'visible' : 'invisible'"
+        class="dropdown-popover"
+      >
+        <!-- First Input Field -->
+        <v-text-field
+          label="Origin"
+          :rules="rules"
+          hide-details="auto"
+          class="px-2"
+          v-model="myPos"
+          type="text"
+          placeholder="Search for Location"
+        ></v-text-field>
 
-          <span v-if="results.length == 0">No Data Available</span>
-          <div class="options">
-            <ul>
-              <li
-                @click="selectItem(Location)"
-                v-for="(Location, index) in results"
-                :key="`City-${index}`"
-              >
-                {{
-                  Location.City +
-                    ", " +
-                    Location.State +
-                    ", " +
-                    Location.PostalCode
-                }}
-              </li>
-            </ul>
-          </div>
+        <!-- Second Input Field -->
+        <v-text-field
+          label="Destination"
+          :rules="rules"
+          hide-details="auto"
+          class="px-2"
+          v-model="destinationPos"
+          type="text"
+          placeholder="Search for Destination"
+        ></v-text-field>
+
+        <br />
+
+        <span v-if="results.length == 0">No Data Available</span>
+        <div class="options">
+          <ul>
+            <li
+              @click="selectItem(Location)"
+              v-for="(Location, index) in results"
+              :key="`City-${index}`"
+            >
+              {{
+                Location.City +
+                ", " +
+                Location.State +
+                ", " +
+                Location.PostalCode
+              }}
+            </li>
+          </ul>
         </div>
-      </section>
-      <section>
-        <br>
-      <v-text-field class="px-2" label="Destination #Dallas, tx"></v-text-field>
-</section>
+      </div>
+    </section>
+
+      <div class="px-2 my-5">
+      
+    
       <v-btn block> Run Trip </v-btn>
 
       <v-card-text>Trip Options</v-card-text>
@@ -95,8 +106,9 @@
         v-model="checkbox3"
         :label="`Avoid Toll`"
       ></v-switch>
+      </div>
     </v-card>
-  </div>
+ </div>
 </template>
 
 <script>
@@ -116,7 +128,7 @@ export default {
     checkbox1: false,
     checkbox2: true,
     checkbox3: true,
-  
+    destinationPos: "",
     startingCity: "",
     endingZip: "",
     endingCity: "",
@@ -132,18 +144,21 @@ export default {
   }),
   watch: {
     checkbox1: function (newValue) {
-      if (newValue) {
+      if (!newValue) {
         this.setOriginToCurrentLocation();
-      } else {
+      }else {
         this.getLocations();
       }
     },
     myPos: function () {
       if (this.myPos.length === 5 && !this.checkbox1) {
-        
         this.getLocations();
-        
       }
+    },
+    destinationPos: function () {
+      // Add any logic related to the destinationPos here
+      // You can call getLocations or perform any other necessary actions
+      this.getLocations2();
     },
   },
   methods: {
@@ -151,10 +166,13 @@ export default {
       if (!this.checkbox1) {
         // Checkbox is checked, set location to current GPS location
         this.myPos=""
+
       } else {
         
         // Checkbox is unchecked, use user input to set location
         //this.getLocations();
+
+        this.myPos=""
         this.setOriginToCurrentLocation();
       }
     },
@@ -191,6 +209,17 @@ export default {
       clearTimeout(this.timeout);
       this.timeout = setTimeout(() => {
         fetch(this.url + this.myPos + this.apikey)
+          .then((res) => res.json())
+          .then((json) => {
+            console.log(json);
+            this.results = json;
+          });
+      }, this.debounceMilliseconds);
+    },
+    async getLocations2() {
+      clearTimeout(this.timeout);
+      this.timeout = setTimeout(() => {
+        fetch(this.url + this.destinationPos + this.apikey)
           .then((res) => res.json())
           .then((json) => {
             console.log(json);
