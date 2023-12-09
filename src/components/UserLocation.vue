@@ -1,6 +1,5 @@
 <template>
   <div>
-   
     <v-card class="mt-2 mx-1 px-1" elevation="9">
       <v-container fluid>
         <v-row>
@@ -11,7 +10,7 @@
               color="red"
               v-model="checkbox1"
               :label="`Set Origin to My GPS Location`"
-              v-on:change="handleCheckboxChange()"
+              
             ></v-switch>
           </v-col>
 
@@ -22,103 +21,103 @@
       </v-container>
 
       <section class="dropdown-wrapper">
-      <div @click="isVisible = !isVisible" class="selected-item">
-        <span v-if="selectedItem">{{
-          selectedItem.City +
-          "," +
-          selectedItem.State +
-          ", " +
-          selectedItem.PostalCode
-        }}</span>
-        <span v-else>Start Location</span>
-        <svg
-          :class="isVisible ? 'dropdown' : ''"
-          class="drop-down-icon"
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          width="24"
-          height="24"
-        >
-          <path fill="none" d="M0 0h24v24H0z" />
-          <path d="M12 8l6 6H6z" />
-        </svg>
-      </div>
-
-      <div
-        :class="isVisible ? 'visible' : 'invisible'"
-        class="dropdown-popover"
-      >
-        <!-- First Input Field -->
-        <v-text-field
-          label="Origin"
-          :rules="rules"
-          hide-details="auto"
-          class="px-2"
-          v-model="myPos"
-          type="text"
-          placeholder="Search for Location"
-        ></v-text-field>
-
-        <!-- Second Input Field -->
-        <v-text-field
-          label="Destination"
-          :rules="rules"
-          hide-details="auto"
-          class="px-2"
-          v-model="destinationPos"
-          type="text"
-          placeholder="Search for Destination"
-        ></v-text-field>
-
-        <br />
-
-        <span v-if="results.length == 0">No Data Available</span>
-        <div class="options">
-          <ul>
-            <li
-              @click="selectItem(Location)"
-              v-for="(Location, index) in results"
-              :key="`City-${index}`"
-            >
-              {{
-                Location.City +
-                ", " +
-                Location.State +
-                ", " +
-                Location.PostalCode
-              }}
-            </li>
-          </ul>
+        <div @click="isVisible = !isVisible" class="selected-item">
+          <span v-if="selectedItem">{{
+            selectedItem.City +
+              "," +
+              selectedItem.State +
+              ", " +
+              selectedItem.PostalCode
+          }}</span>
+          <span v-else>Start Location</span>
+          <svg
+            :class="isVisible ? 'dropdown' : ''"
+            class="drop-down-icon"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            width="24"
+            height="24"
+          >
+            <path fill="none" d="M0 0h24v24H0z" />
+            <path d="M12 8l6 6H6z" />
+          </svg>
         </div>
-      </div>
-    </section>
 
+        <div
+          :class="isVisible ? 'visible' : 'invisible'"
+          class="dropdown-popover"
+        >
+          <!-- First Input Field -->
+          <v-text-field
+            label="Origin"
+            :rules="rules"
+            hide-details="auto"
+            class="px-2"
+            v-model="myPos"
+            type="text"
+            placeholder="Search for Location"
+          ></v-text-field>
+
+          <!-- Second Input Field -->
+          <v-text-field
+            label="Destination"
+            :rules="rules"
+            hide-details="auto"
+            class="px-2"
+            v-model="destinationPos"
+            type="text"
+            placeholder="Search for Destination"
+          ></v-text-field>
+
+          <br />
+
+          <span v-if="results.length == 0">No Data Available</span>
+          <div class="options">
+            <ul>
+              <li
+                @click="selectItem(Location)"
+                v-for="(Location, index) in results"
+                :key="`City-${index}`"
+              >
+                {{
+                  Location.City +
+                    ", " +
+                    Location.State +
+                    ", " +
+                    Location.PostalCode
+                }}
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+<br>
+<br>
       <div class="px-2 my-15">
-      
-    
-      <v-btn @click="testRunTrip"> Run Trip </v-btn>
+        
+        <v-card-text>Trip Options</v-card-text>
+        <v-select :items="r_items" filled label="Practical"></v-select>
+        <v-switch pa-5 v-model="checkbox2" :label="`Close Borders`"></v-switch>
+        <v-switch
+          class="p-0 m-0"
+          v-model="checkbox3"
+          :label="`Avoid Toll`"
+        ></v-switch>
+        <v-btn @click="testRunTrip"> Run Trip </v-btn>
 
-      <v-card-text>Trip Options</v-card-text>
-      <v-select :items="r_items" filled label="Practical"></v-select>
-      <v-switch pa-5 v-model="checkbox2" :label="`Close Borders`"></v-switch>
-      <v-switch
-        class="p-0 m-0"
-        v-model="checkbox3"
-        :label="`Avoid Toll`"
-      ></v-switch>
       </div>
     </v-card>
- </div>
+  </div>
 </template>
 
 <script>
 //import autoComplete from "./autoComplete.vue"
-import { tmAPIKey } from './tmAPIKey';
+import { lookUpKey, tmAPIKey } from "./tmAPIKey";
 export default {
   components: {},
   name: "userLoc",
   data: () => ({
-    myPos: "",
+    myPos: null,
     r_items: ["practical", "Shortest", "Interstate"],
     value: false,
     right: true,
@@ -130,11 +129,8 @@ export default {
     checkbox2: true,
     checkbox3: true,
     destinationPos: "",
-    startingCity: "",
-    endingZip: "",
-    endingCity: "",
     url: "https://prime.promiles.com/WebAPI/api/ValidateLocation?locationText=",
-    apikey: "&apikey=bU03MSs2UjZIS21HMG5QSlIxUTB4QT090",
+    apikey: lookUpKey,
     results: [],
     selectedItem: null,
     isVisible: false,
@@ -144,39 +140,29 @@ export default {
     debounceMilliseconds: 250,
   }),
   watch: {
-    checkbox1: function (newValue) {
-      if (!newValue) {
+    checkbox1: function(newValue) {
+      if (newValue) {
         this.setOriginToCurrentLocation();
-      }else {
+      } else {
+        this.myPos =""
         this.getLocations();
       }
     },
-    myPos: function () {
-      if (this.myPos.length === 5 && !this.checkbox1) {
+    myPos: function() {
+      if (this.myPos.length >= 3 && !this.checkbox1) {
         this.getLocations();
       }
     },
-    destinationPos: function () {
+    destinationPos: function() {
+    if (this.destinationPos.length >= 3 )
       // Add any logic related to the destinationPos here
       // You can call getLocations or perform any other necessary actions
       this.getLocations2();
     },
   },
   methods: {
-    handleCheckboxChange() {
-      if (!this.checkbox1) {
-        // Checkbox is checked, set location to current GPS location
-        this.myPos=""
-
-      } else {
-        
-        // Checkbox is unchecked, use user input to set location
-        //this.getLocations();
-
-        this.myPos=""
-        this.setOriginToCurrentLocation();
-      }
-    },
+    
+    
     setOriginToCurrentLocation() {
       if (navigator.geolocation) {
         var options = {
@@ -198,9 +184,7 @@ export default {
       var lat = position.coords.latitude;
       var lon = position.coords.longitude;
       this.myPos = lat + ":" + lon;
-      
     },
-    
 
     error(err) {
       console.warn(`ERROR(${err.code}): ${err.message}`);
@@ -228,10 +212,12 @@ export default {
           });
       }, this.debounceMilliseconds);
     },
-   
+
     selectItem(Location) {
       this.selectedItem = Location;
-      this.isVisible = false;
+
+      this.isVisible = true;
+      
     },
     filteredLoctions() {
       return this.userArray.filter((Location) => {
@@ -240,58 +226,57 @@ export default {
     },
     testRunTrip() {
       const trip = {
-        "TripLegs": [
+        TripLegs: [
           {
-            "Address": "",
-            "City": "",
-            "State": "",
-            "PostalCode": "",
-            "Latitude": "",
-            "Longitude": "",
-            "LocationText":this.myPos
+            Address: "",
+            City: "",
+            State: "",
+            PostalCode: "",
+            Latitude: "",
+            Longitude: "",
+            LocationText: this.myPos,
           },
           {
-            "Address": "",
-            "City": "",
-            "State": "",
-            "PostalCode": "",
-            "Latitude": "",
-            "Longitude": "",
-            "LocationText": this.destinationPos
-          }
+            Address: "",
+            City: "",
+            State: "",
+            PostalCode: "",
+            Latitude: "",
+            Longitude: "",
+            LocationText: this.destinationPos,
+          },
         ],
-        "UnitMPG": 6,
-        "RoutingMethod": 0,
-        "BorderOpen": true,
-        "AvoidTollRoads": false,
-        "VehicleType": 7,
-        "AllowRelaxRestrictions": true,
-        "GetDrivingDirections": true,
-        "GetMapPoints": false,
-        "GetStateMileage": true,
-        "GetTripSummary": true,
-        "GetTruckStopsOnRoute": true,
-        "GetFuelOptimization": true,
-        "apikey": tmAPIKey,
+        UnitMPG: 6,
+        RoutingMethod: 0,
+        BorderOpen: true,
+        AvoidTollRoads: false,
+        VehicleType: 7,
+        AllowRelaxRestrictions: false,
+        GetDrivingDirections: false,
+        GetMapPoints: false,
+        GetStateMileage: true,
+        GetTripSummary: true,
+        GetTruckStopsOnRoute: false,
+        GetFuelOptimization: false,
+        apikey: tmAPIKey,
       };
 
-      fetch('http://prime.promiles.com/WebAPI/api/RunTrip', {
-        method: 'POST',
+      fetch("http://prime.promiles.com/WebAPI/api/RunTrip", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(trip),
       })
-      .then(response => response.json())
-      .then(data => {
-        console.log(this.myPos)
-        console.log(JSON.stringify(data));
-      })
-      .catch(error => {
-        console.error('Error:', error);
-      });
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(this.myPos);
+          console.log(JSON.stringify(data));
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
     },
-
   },
 };
 </script>
@@ -312,7 +297,7 @@ export default {
   max-width: 350px;
   position: absolute;
   margin: 5 auto;
-    z-index: 1;
+  z-index: 1;
 
   .selected-item {
     height: 40px;
@@ -334,7 +319,6 @@ export default {
     }
   }
   .dropdown-popover {
-   
     border: 2px solid lightgray;
     top: 46px;
     left: 0;

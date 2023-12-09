@@ -6,7 +6,7 @@
   
   <script>
   import { tmAPIKey } from './tmAPIKey';
-  
+  import { lookUpKey} from './tmAPIKey';
   export default {
     methods: {
       testRunTrip() {

@@ -19,8 +19,6 @@
 
       <v-divider class="red lighten-1"></v-divider>
       <userLoc />
-      
-     
     </v-navigation-drawer>
 
     <v-navigation-drawer
@@ -49,7 +47,6 @@
       <v-divider class="red lighten-1"></v-divider>
 
       <v-card class="px-2" elevation="9">
-        <my-checkbox />
         <v-text-field
           label="input label"
           :rules="rules"
@@ -80,13 +77,12 @@
 
         <v-card-text class="white--text pt-1 d-flex justify-center">
           Powered by ProMiles
-          
         </v-card-text>
 
         <v-divider></v-divider>
 
         <v-card-text class="white--text d-flex justify-center">
-         <strong>TruckMiles -</strong>{{ new Date().getFullYear() }}
+          <strong>TruckMiles -</strong>{{ new Date().getFullYear() }}
         </v-card-text>
       </v-footer>
     </v-card>
@@ -95,12 +91,9 @@
 
 <script>
 import userLoc from "./UserLocation.vue";
-import myCheckbox from "./checkbox.vue";
-
-
 
 export default {
-  components: { userLoc, myCheckbox},
+  components: { userLoc },
   name: "Footer",
   data: () => ({
     Drawer2: false,
@@ -113,7 +106,6 @@ export default {
       (value) => (value || "").length <= 20 || "Max 20 characters",
     ],
     icons: ["mdi-truck", "mdi-map", "mdi-check"],
-  
   }),
 };
 </script>
