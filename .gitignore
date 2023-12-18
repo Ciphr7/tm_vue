@@ -1,8 +1,10 @@
 .DS_Store
 node_modules
 /dist
-/src/components/googleApiKey.js
-/src/components/tmAPIKey.js
+/src/components/googleApiKey
+/src/components/tmAPIKey
+
+
 
 
 # local env files
