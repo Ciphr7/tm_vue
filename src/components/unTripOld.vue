@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-card class="mx-1 px-1 mt-1" elevation="9">
+    <v-card >
       <v-container fluid>
         <v-row>
           <v-col cols="10">
