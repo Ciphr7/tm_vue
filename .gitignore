@@ -1,8 +1,9 @@
 .DS_Store
 node_modules
 /dist
-/src/components/googleApiKey
-/src/components/tmAPIKey
+/src/components/googleApiKey.js
+/src/components/tmAPIKey.js
+
 
 
 
