@@ -18,7 +18,8 @@
       </v-list-item>
 
       <v-divider class="red lighten-1"></v-divider>
-      <userLoc />
+      <trip-details />
+    
     </v-navigation-drawer>
 
     <v-navigation-drawer
@@ -45,7 +46,7 @@
       </v-list-item>
 
       <v-divider class="red lighten-1"></v-divider>
-
+      <trip-results />
       <v-card class="px-2" elevation="9">
         <v-text-field
           label="input label"
@@ -90,10 +91,12 @@
 </template>
 
 <script>
-import userLoc from "./UserLocation.vue";
+import TripDetails from './TripDetails.vue';
+import TripResults from './TripResults.vue';
+
 
 export default {
-  components: { userLoc },
+  components: {  TripResults, TripDetails },
   name: "Footer",
   data: () => ({
     Drawer2: false,

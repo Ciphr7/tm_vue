@@ -198,7 +198,7 @@ export default {
     destinationPos: "",
     url: "https://prime.promiles.com/WebAPI/api/ValidateLocation?locationText=",
     apikey: lookUpKey,
-    r_items: ["practical", "Shortest", "Interstate"],
+  
     results: [],
     results2: [],
     selectedItem: null,

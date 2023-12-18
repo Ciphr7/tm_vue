@@ -8427,6 +8427,11 @@
   "resolved" "https://registry.npmjs.org/vuetify/-/vuetify-2.5.10.tgz"
   "version" "2.5.10"
 
+"vuex@^2.5.0":
+  "integrity" "sha512-5oJPOJySBgSgSzoeO+gZB/BbN/XsapgIF6tz34UwJqnGZMQurzIO3B4KIBf862gfc9ya+oduY5sSkq+5/oOilQ=="
+  "resolved" "https://registry.npmjs.org/vuex/-/vuex-2.5.0.tgz"
+  "version" "2.5.0"
+
 "watchpack-chokidar2@^2.0.1":
   "integrity" "sha512-nCFfBIPKr5Sh61s4LPpy1Wtfi0HE8isJ3d2Yb5/Ppw2P2B/3eVSEBjKfN0fmHJSK14+31KwMKmcrzs2GM4P0Ww=="
   "resolved" "https://registry.npmjs.org/watchpack-chokidar2/-/watchpack-chokidar2-2.0.1.tgz"
