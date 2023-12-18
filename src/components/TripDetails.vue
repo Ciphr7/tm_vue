@@ -1,6 +1,5 @@
 <template>
   <div>
-    
     <v-card class="mt-2 mx-1 px-1" elevation="9">
       <v-container fluid>
         <v-row>
@@ -24,10 +23,10 @@
         <div @click="isVisible = !isVisible" class="selected-item">
           <span v-if="selectedItem">{{
             selectedItem.City +
-            "," +
-            selectedItem.State +
-            ", " +
-            selectedItem.PostalCode
+              "," +
+              selectedItem.State +
+              ", " +
+              selectedItem.PostalCode
           }}</span>
           <span v-else>{{ this.myOrg }}</span>
           <svg
@@ -71,10 +70,10 @@
               >
                 {{
                   Location.City +
-                  ", " +
-                  Location.State +
-                  ", " +
-                  Location.PostalCode
+                    ", " +
+                    Location.State +
+                    ", " +
+                    Location.PostalCode
                 }}
               </li>
             </ul>
@@ -86,10 +85,10 @@
         <div @click="isVisible2 = !isVisible2" class="selected-item2">
           <span v-if="selectedItem2">{{
             selectedItem2.City +
-            "," +
-            selectedItem2.State +
-            ", " +
-            selectedItem2.PostalCode
+              "," +
+              selectedItem2.State +
+              ", " +
+              selectedItem2.PostalCode
           }}</span>
           <span v-else>Destination Location</span>
           <svg
@@ -134,10 +133,10 @@
               >
                 {{
                   Location2.City +
-                  ", " +
-                  Location2.State +
-                  ", " +
-                  Location2.PostalCode
+                    ", " +
+                    Location2.State +
+                    ", " +
+                    Location2.PostalCode
                 }}
               </li>
             </ul>
@@ -173,16 +172,10 @@
 
 import { lookUpKey, tmAPIKey } from "./tmAPIKey";
 
-
-
 export default {
-  components: {  },
+  components: {},
   name: "TripDetail",
-  mounted() {
-    // Listen for the custom event emitted by the first component
-    this.$root.$on("lat", this.lat);
-    this.$root.$on("lon", this.lon);
-  },
+  mounted() {},
   data: () => ({
     myOrg: null,
     r_items: ["practical", "Shortest", "Interstate"],
@@ -198,7 +191,7 @@ export default {
     destinationPos: "",
     url: "https://prime.promiles.com/WebAPI/api/ValidateLocation?locationText=",
     apikey: lookUpKey,
-  
+
     results: [],
     results2: [],
     selectedItem: null,
@@ -213,25 +206,28 @@ export default {
     tresults: [],
   }),
   watch: {
-    gpsCheck: function (newValue) {
+    gpsCheck: function(newValue) {
       this.myOrg = "";
       if (newValue) {
+        // Listen for the custom event emitted by the first component
+        this.$root.$on("lat", this.lat);
+        this.$root.$on("lon", this.lon);
         this.setOriginToCurrentLocation();
       } else {
         // Don't forget to remove the event listener to avoid memory leaks
-        //this.$root.$off("lat", this.lat);
-        //this.$root.$off("lon", this.lon);
-
-        this.myOrg = "";
+        this.$root.$off("lat", this.lat);
+        this.$root.$off("lon", this.lon);
+        this.$store.state.lat = ""
+        this.$store.state.lon = ""
         this.getLocations();
       }
     },
-    myOrg: function () {
+    myOrg: function() {
       if (this.myOrg.length >= 3 && !this.gpsCheck) {
         this.getLocations();
       }
     },
-    destinationPos: function () {
+    destinationPos: function() {
       if (this.destinationPos.length >= 3)
         // Add any logic related to the destinationPos here
         // You can call getLocations or perform any other necessary actions
@@ -319,22 +315,22 @@ export default {
       const trip = {
         TripLegs: [
           {
-            Address: "",
-            City: "this.selectedItem.City",
-            State: "this.selectedItem.State",
-            PostalCode: "this.selectedItem.PostalCode",
-            Latitude: this.$store.state.lat,
-            Longitude: this.$store.state.lon,
+            Address: this.selectedItem.Address || "",
+            City: this.selectedItem.City || "",
+            State: this.selectedItem.State || "",
+            PostalCode: this.selectedItem.PostalCode || "",
+            Latitude: this.$store.state.lat || "",
+            Longitude: this.$store.state.lon || "",
             LocationText: "",
           },
           {
-            Address: "",
-            City: this.selectedItem2.City,
-            State: this.selectedItem2.State,
-            PostalCode: this.selectedItem2.PostalCode,
+            Address: this.selectedItem.Address || "",
+            City: this.selectedItem2.City || "",
+            State: this.selectedItem2.State || "",
+            PostalCode: this.selectedItem2.PostalCode || "",
             Latitude: "",
             Longitude: "",
-            LocationText: this.destinationPos,
+            LocationText: this.destinationPos || "",
           },
         ],
         UnitMPG: 6,

@@ -47,14 +47,7 @@
 
       <v-divider class="red lighten-1"></v-divider>
       <trip-results />
-      <v-card class="px-2" elevation="9">
-        <v-text-field
-          label="input label"
-          :rules="rules"
-          hide-details="auto"
-          class="px-2"
-        ></v-text-field>
-      </v-card>
+     
     </v-navigation-drawer>
     <v-card class=" mx-auto my-3" color="red" width="70%">
       <v-footer>
