@@ -143,11 +143,10 @@
           </div>
         </div>
       </section>
-      <br />
-      <br />
-      <div class="px-2 my-15">
+     
+      <div class="px-2 my-5">
         <v-card-text>Trip Options</v-card-text>
-        <v-select :items="r_items" filled label="Practical"></v-select>
+        <v-select v-model="selectedRoutingMethod" :items="r_items" filled label="Routing Method"></v-select>
         <v-switch
           pa-5
           v-model="borderCheck"
@@ -206,6 +205,7 @@ export default {
     timeout: null,
     debounceMilliseconds: 250,
     tresults: [],
+    selectedRoutingMethod:"practical"
   }),
   watch: {
     gpsCheck: function(newValue) {
@@ -226,6 +226,21 @@ export default {
         this.getLocations();
       }
     },
+    selectedRoutingMethod: function(newValue) {
+    // You can add any logic here based on the selected value
+    switch (newValue) {
+      case 'practical':
+        this.RoutingMethod = 0; // Update with the appropriate value for 'practical'
+        break;
+      case 'Shortest':
+        this.RoutingMethod = 1; // Update with the appropriate value for 'Shortest'
+        break;
+      case 'Interstate':
+        this.RoutingMethod = 2; // Update with the appropriate value for 'Interstate'
+        break;
+      // Add more cases if needed
+    }
+  },
     myOrg: function() {
       if (this.myOrg.length >= 3 && !this.gpsCheck) {
         this.getLocations();
@@ -346,7 +361,7 @@ export default {
           },
         ],
         UnitMPG: 6,
-        RoutingMethod: 0,
+        RoutingMethod: this.selectedRoutingMethod,
         BorderOpen: this.borderCheck,
         AvoidTollRoads: this.tollCheck,
         VehicleType: 7,
@@ -374,6 +389,7 @@ export default {
           this.tresults = data;
           this.$store.commit("setTResults", data);
           this.$emit("trip-results", this.tresults);
+          console.log(this.selectedRoutingMethod)
         })
         .catch((error) => {
           console.error("Error:", error);

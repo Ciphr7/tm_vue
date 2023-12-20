@@ -1,12 +1,12 @@
 <template>
  
-    <v-container style="max-height: 100vh; overflow-y: hidden;">
+    <v-container class=" mx-0 px-0" >
       <v-row justify="center" align="center" class="mt-5">
         <v-col>
-          <v-card class=" mx-0 px-5">
+          <v-card class=" mx-0 px-0">
             <v-card-title class="headline ">Trip Summary</v-card-title>
             <v-card-text>
-              <div>
+              <div >
                 <p><strong>Origin:</strong> {{ $store.state.tresults.OriginLabel }}</p>
                 <p><strong>Destination:</strong> {{ $store.state.tresults.DestinationLabel }}</p>
                 <p><strong>Trip Distance:</strong> {{ $store.state.tresults.TripDistance }} miles</p>
