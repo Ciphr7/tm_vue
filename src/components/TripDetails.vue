@@ -152,11 +152,13 @@
           pa-5
           v-model="borderCheck"
           :label="`Close Borders`"
+          color="red"
         ></v-switch>
         <v-switch
           class="p-0 m-0"
           v-model="tollCheck"
           :label="`Avoid Toll`"
+          color="red"
         ></v-switch>
         <v-btn @click="testRunTrip"> Run Trip </v-btn>
         {{ this.tresults.TripDistance }}
@@ -177,7 +179,7 @@ export default {
   name: "TripDetail",
   mounted() {},
   data: () => ({
-    myOrg: null,
+    myOrg: "",
     r_items: ["practical", "Shortest", "Interstate"],
     value: false,
     right: true,
@@ -207,18 +209,20 @@ export default {
   }),
   watch: {
     gpsCheck: function(newValue) {
-      this.myOrg = "";
+      
       if (newValue) {
         // Listen for the custom event emitted by the first component
         this.$root.$on("lat", this.lat);
         this.$root.$on("lon", this.lon);
+        this.myOrg = "";
         this.setOriginToCurrentLocation();
       } else {
+        this.myOrg = "";
         // Don't forget to remove the event listener to avoid memory leaks
         this.$root.$off("lat", this.lat);
         this.$root.$off("lon", this.lon);
-        this.$store.state.lat = ""
-        this.$store.state.lon = ""
+        this.$store.state.lat = "";
+        this.$store.state.lon = "";
         this.getLocations();
       }
     },
@@ -253,15 +257,15 @@ export default {
     },
 
     success(position) {
-      this.myOrg = "";
       var lat = position.coords.latitude;
       var lon = position.coords.longitude;
-      this.myOrg = lat + ":" + lon;
+
       this.$store.commit("setLat", lat);
       this.$emit("lat", this.lat);
       this.$store.commit("setLon", lon);
       this.$emit("lon", this.lon);
       console.log(this.$store.state.lon);
+      this.myOrg = this.$store.state.lat + this.$store.state.lon;
     },
 
     error(err) {
@@ -269,6 +273,7 @@ export default {
     },
 
     async getLocations() {
+      
       clearTimeout(this.timeout);
       this.timeout = setTimeout(() => {
         fetch(this.url + this.myOrg + this.apikey)
@@ -276,6 +281,7 @@ export default {
           .then((json) => {
             console.log(json);
             this.results = json;
+            
           });
       }, this.debounceMilliseconds);
     },
@@ -315,22 +321,28 @@ export default {
       const trip = {
         TripLegs: [
           {
-            Address: this.selectedItem.Address || "",
-            City: this.selectedItem.City || "",
-            State: this.selectedItem.State || "",
-            PostalCode: this.selectedItem.PostalCode || "",
-            Latitude: this.$store.state.lat || "",
-            Longitude: this.$store.state.lon || "",
+            Address:
+              this.selectedItem && this.selectedItem.Address
+                ? this.selectedItem.Address
+                : "",
+            City: this.selectedItem ? this.selectedItem.City : "",
+            State: this.selectedItem ? this.selectedItem.State : "",
+            PostalCode: this.selectedItem ? this.selectedItem.PostalCode : "",
+            Latitude: this.$store.state.lat,
+            Longitude: this.$store.state.lon,
             LocationText: "",
           },
           {
-            Address: this.selectedItem.Address || "",
-            City: this.selectedItem2.City || "",
-            State: this.selectedItem2.State || "",
-            PostalCode: this.selectedItem2.PostalCode || "",
+            Address:
+              this.selectedItem2 && this.selectedItem2.Address
+                ? this.selectedItem2.Address
+                : "",
+            City: this.selectedItem2 ? this.selectedItem2.City : "",
+            State: this.selectedItem2 ? this.selectedItem2.State : "",
+            PostalCode: this.selectedItem2 ? this.selectedItem2.PostalCode : "",
             Latitude: "",
             Longitude: "",
-            LocationText: this.destinationPos || "",
+            LocationText:"",
           },
         ],
         UnitMPG: 6,
