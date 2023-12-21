@@ -6,7 +6,7 @@
           <v-col cols="10">
             <v-switch
               id="SetToCurrentLocation"
-              class="py-1"
+              class="py-1 custom-switch"
               color="red"
               v-model="gpsCheck"
               :label="`Set Origin to My GPS Location`"
@@ -14,10 +14,22 @@
           </v-col>
 
           <v-col cols="1">
-            <v-icon class="red py-5"> mdi-access-point </v-icon>
+            <v-icon :class="{ 'theme--dark': newValue }" :color="iconColor" class=" py-5"> mdi-access-point </v-icon>
           </v-col>
         </v-row>
       </v-container>
+
+      <v-container>
+        <v-autocomplete
+        v-model="origin"
+        :items="autocompleteItems"
+        :loading="loading"
+        :search-input.sync="searchInput"
+        :min-length="3"
+        @input="onAutocompleteChange"
+        label="Origin"
+      ></v-autocomplete>
+    </v-container>
 
       <section class="dropdown-wrapper">
         <div @click="isVisible = !isVisible" class="selected-item">
@@ -28,7 +40,10 @@
               ", " +
               selectedItem.PostalCode
           }}</span>
-          <span v-else>{{ this.myOrg }}</span>
+          <span v-else
+            ><p class="custom-switch">{{ this.myOrg }}</p></span
+          >
+
           <svg
             :class="isVisible ? 'dropdown' : ''"
             class="drop-down-icon"
@@ -90,7 +105,9 @@
               ", " +
               selectedItem2.PostalCode
           }}</span>
-          <span v-else>Destination Location</span>
+          <span v-else
+            ><p class="text-sm-subtitle-2">Destination Location</p></span
+          >
           <svg
             :class="isVisible2 ? 'dropdown2' : ''"
             class="drop-down-icon"
@@ -143,10 +160,15 @@
           </div>
         </div>
       </section>
-     
-      <div class="px-2 my-5">
+
+      <div class="px-2 my-2">
         <v-card-text>Trip Options</v-card-text>
-        <v-select v-model="selectedRoutingMethod" :items="r_items" filled label="Routing Method"></v-select>
+        <v-select
+          v-model="selectedRoutingMethod"
+          :items="r_items"
+          filled
+          label="Routing Method"
+        ></v-select>
         <v-switch
           pa-5
           v-model="borderCheck"
@@ -154,15 +176,16 @@
           color="red"
         ></v-switch>
         <v-switch
-          class="p-0 m-0"
+          class="py-5 my-2"
           v-model="tollCheck"
           :label="`Avoid Toll`"
           color="red"
         ></v-switch>
-        <v-btn @click="testRunTrip"> Run Trip </v-btn>
-        {{ this.tresults.TripDistance }}
 
-        <div></div>
+        <div>
+          <v-btn @click="testRunTrip"> Run Trip </v-btn>
+          {{ this.tresults.TripDistance }}
+        </div>
       </div>
     </v-card>
   </div>
@@ -178,6 +201,10 @@ export default {
   name: "TripDetail",
   mounted() {},
   data: () => ({
+    origin: '',
+    autocompleteItems: [],
+    loading: false,
+    searchInput: '',
     myOrg: "",
     r_items: ["practical", "Shortest", "Interstate"],
     value: false,
@@ -205,42 +232,52 @@ export default {
     timeout: null,
     debounceMilliseconds: 250,
     tresults: [],
-    selectedRoutingMethod:"practical"
+    selectedRoutingMethod: "practical",
   }),
+  computed: {
+    iconColor() {
+      // Calculate the color based on the value of gpsCheck
+      return this.gpsCheck ? 'red' : 'white';
+    },
+  },
   watch: {
+    searchInput: function(newSearchInput) {
+      if (newSearchInput.length >= 3) {
+        
+        this.onAutocompleteChange();
+      }
+    },
     gpsCheck: function(newValue) {
-      
       if (newValue) {
-        // Listen for the custom event emitted by the first component
         this.$root.$on("lat", this.lat);
         this.$root.$on("lon", this.lon);
         this.myOrg = "";
         this.setOriginToCurrentLocation();
       } else {
-        this.myOrg = "";
         // Don't forget to remove the event listener to avoid memory leaks
         this.$root.$off("lat", this.lat);
         this.$root.$off("lon", this.lon);
         this.$store.state.lat = "";
         this.$store.state.lon = "";
+        this.myOrg = "";
         this.getLocations();
       }
     },
     selectedRoutingMethod: function(newValue) {
-    // You can add any logic here based on the selected value
-    switch (newValue) {
-      case 'practical':
-        this.RoutingMethod = 0; // Update with the appropriate value for 'practical'
-        break;
-      case 'Shortest':
-        this.RoutingMethod = 1; // Update with the appropriate value for 'Shortest'
-        break;
-      case 'Interstate':
-        this.RoutingMethod = 2; // Update with the appropriate value for 'Interstate'
-        break;
-      // Add more cases if needed
-    }
-  },
+      // You can add any logic here based on the selected value
+      switch (newValue) {
+        case "practical":
+          this.RoutingMethod = 0; // Update with the appropriate value for 'practical'
+          break;
+        case "Shortest":
+          this.RoutingMethod = 1; // Update with the appropriate value for 'Shortest'
+          break;
+        case "Interstate":
+          this.RoutingMethod = 2; // Update with the appropriate value for 'Interstate'
+          break;
+        // Add more cases if needed
+      }
+    },
     myOrg: function() {
       if (this.myOrg.length >= 3 && !this.gpsCheck) {
         this.getLocations();
@@ -254,6 +291,31 @@ export default {
     },
   },
   methods: {
+    onAutocompleteChange: async function () {
+      this.loading = true;
+
+      try {
+        const response = await fetch(
+          `https://prime.promiles.com/WebAPI/api/ValidateLocation?locationText=${this.searchInput}&apikey=bU03MSs2UjZIS21HMG5QSlIxUTB4QT090`
+        );
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        this.autocompleteItems = data.map((item) => ({
+          text: `${item.City}, ${item.State}, ${item.PostalCode}`,
+          value: item, // You can customize this based on your data structure
+        }));
+      } catch (error) {
+        console.error('Error fetching autocomplete data', error);
+      } finally {
+        this.loading = false;
+      }
+    },
+  
     setOriginToCurrentLocation() {
       if (navigator.geolocation) {
         var options = {
@@ -280,7 +342,7 @@ export default {
       this.$store.commit("setLon", lon);
       this.$emit("lon", this.lon);
       console.log(this.$store.state.lon);
-      this.myOrg = this.$store.state.lat + this.$store.state.lon;
+      this.myOrg = this.$store.state.lat + ":" + this.$store.state.lon;
     },
 
     error(err) {
@@ -288,7 +350,6 @@ export default {
     },
 
     async getLocations() {
-      
       clearTimeout(this.timeout);
       this.timeout = setTimeout(() => {
         fetch(this.url + this.myOrg + this.apikey)
@@ -296,7 +357,6 @@ export default {
           .then((json) => {
             console.log(json);
             this.results = json;
-            
           });
       }, this.debounceMilliseconds);
     },
@@ -357,7 +417,7 @@ export default {
             PostalCode: this.selectedItem2 ? this.selectedItem2.PostalCode : "",
             Latitude: "",
             Longitude: "",
-            LocationText:"",
+            LocationText: "",
           },
         ],
         UnitMPG: 6,
@@ -389,7 +449,7 @@ export default {
           this.tresults = data;
           this.$store.commit("setTResults", data);
           this.$emit("trip-results", this.tresults);
-          console.log(this.selectedRoutingMethod)
+          console.log(this.selectedRoutingMethod);
         })
         .catch((error) => {
           console.error("Error:", error);
@@ -399,6 +459,22 @@ export default {
 };
 </script>
 <style scoped lang="scss">
+.custom-switch {
+  font-size: 20px;
+}
+.v-label {
+  font-size: 10px;
+}
+
+.theme--dark.v-icon{
+  color: rgb(20, 10, 91);
+}
+
+.v-input--selection-controls {
+  font-size: 10px;
+  height: 10px;
+}
+
 #auto-complete {
   font-family: "Avenir", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -425,7 +501,7 @@ export default {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 18px;
+
     font-weight: 400;
 
     .drop-down-icon {
@@ -516,11 +592,12 @@ export default {
     height: 40px;
     border-bottom: 2px solid rgb(228, 61, 61);
     border-radius: 5px;
-    padding: 5px 10px;
+    padding: 5px;
+    margin: 5px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 18px;
+
     font-weight: 400;
 
     .drop-down-icon2 {
