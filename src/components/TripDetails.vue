@@ -14,92 +14,47 @@
           </v-col>
 
           <v-col cols="1">
-            <v-icon :class="{ 'theme--dark': newValue }" :color="iconColor" class=" py-5"> mdi-access-point </v-icon>
+            <v-icon
+              :class="{ 'theme--dark': newValue }"
+              :color="iconColor"
+              class=" py-5"
+            >
+              mdi-access-point
+            </v-icon>
           </v-col>
         </v-row>
       </v-container>
 
       <v-container>
         <v-autocomplete
-        v-model="selectedItem"
-        :items="autocompleteItems"
-        :loading="loading"
-        :search-input.sync="searchInput"
-        :min-length="3"
-        @input="onAutocompleteChange"
-        item-text="text"
-        item-value="value"
-        label="Origin"
-      ></v-autocomplete>
-    </v-container>
-
+          v-model="selectedItem"
+          :items="autocompleteItems"
+          :loading="loading"
+          :search-input.sync="searchInput"
+          :min-length="3"
+          @input="onAutocompleteChange"
+          item-text="text"
+          item-value="value"
+          label="Origin"
+        ></v-autocomplete>
+      </v-container>
 
       <div class="py-1"></div>
-      <section class="dropdown-wrapper2">
-        <div @click="isVisible2 = !isVisible2" class="selected-item2">
-          <span v-if="selectedItem2">{{
-            selectedItem2.City +
-              "," +
-              selectedItem2.State +
-              ", " +
-              selectedItem2.PostalCode
-          }}</span>
-          <span v-else
-            ><p class="text-sm-subtitle-2">Destination Location</p></span
-          >
-          <svg
-            :class="isVisible2 ? 'dropdown2' : ''"
-            class="drop-down-icon"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            width="24"
-            height="24"
-          >
-            <path fill="none" d="M0 0h24v24H0z" />
-            <path d="M12 8l6 6H6z" />
-          </svg>
-        </div>
-
-        <div
-          :class="isVisible2 ? 'visible2' : 'invisible2'"
-          class="dropdown-popover2"
-        >
-          <!-- First Input Field -->
-
-          <!-- Second Input Field -->
-          <v-text-field
-            label="Destination"
-            :rules="rules"
-            hide-details="auto"
-            class="px-2"
-            v-model="destinationPos"
-            type="text"
-            placeholder="Search for Destination"
-          ></v-text-field>
-
-          <br />
-
-          <span v-if="results2.length == 0">No Data Available</span>
-          <div class="options2">
-            <ul>
-              <li
-                @click="selectItem2(Location2)"
-                v-for="(Location2, index) in results2"
-                :key="`City-${index}`"
-              >
-                {{
-                  Location2.City +
-                    ", " +
-                    Location2.State +
-                    ", " +
-                    Location2.PostalCode
-                }}
-              </li>
-            </ul>
-          </div>
-        </div>
-      </section>
-
+      <template>
+        <section>
+          <v-autocomplete
+          v-model="selectedItem2"
+          :items="autocompleteItems2"
+          :loading="loading"
+          :search-input.sync="searchInput2"
+          :min-length="3"
+          @input="onAutocompleteChange2"
+          item-text2="text"
+          item-value2="value"
+          label="Destination"
+        ></v-autocomplete>
+        </section>
+      </template>
       <div class="px-2 my-2">
         <v-card-text>Trip Options</v-card-text>
         <v-select
@@ -140,11 +95,14 @@ export default {
   name: "TripDetail",
   mounted() {},
   data: () => ({
-    origin: '',
+    origin: "",
+    dest:"",
     autocompleteItems: [],
+    autocompleteItems2: [],
     loading: false,
-    searchInput: '',
-    myOrg: "",
+    searchInput: "",
+    searchInput2: "",
+    
     r_items: ["practical", "Shortest", "Interstate"],
     value: false,
     right: true,
@@ -155,7 +113,6 @@ export default {
     gpsCheck: false,
     borderCheck: false,
     tollCheck: false,
-    destinationPos: "",
     url: "https://prime.promiles.com/WebAPI/api/ValidateLocation?locationText=",
     apikey: lookUpKey,
 
@@ -163,34 +120,35 @@ export default {
     results2: [],
     selectedItem: null,
     selectedItem2: null,
-    isVisible: false,
-    isVisible2: false,
-    searchQuery: "",
-    Location: [],
-    Location2: [],
+    
+   
     timeout: null,
-    debounceMilliseconds: 250,
+    
     tresults: [],
     selectedRoutingMethod: "practical",
   }),
   computed: {
     iconColor() {
       // Calculate the color based on the value of gpsCheck
-      return this.gpsCheck ? 'red' : 'white';
+      return this.gpsCheck ? "red" : "white";
     },
   },
   watch: {
     searchInput: function(newSearchInput) {
       if (newSearchInput.length >= 3) {
-        
         this.onAutocompleteChange();
+      }
+    },
+    searchInput2: function(newSearchInput2) {
+      if (newSearchInput2.length >= 3) {
+        this.onAutocompleteChange2();
       }
     },
     gpsCheck: function(newValue) {
       if (newValue) {
         this.$root.$on("lat", this.lat);
         this.$root.$on("lon", this.lon);
-        this.orgin = "";
+        this.selectedItem = "";
         this.setOriginToCurrentLocation();
       } else {
         // Don't forget to remove the event listener to avoid memory leaks
@@ -198,7 +156,7 @@ export default {
         this.$root.$off("lon", this.lon);
         this.$store.state.lat = "";
         this.$store.state.lon = "";
-        this.orgin = "";
+        this.selectedItem = "";
         this.onAutocompleteChange();
       }
     },
@@ -217,25 +175,15 @@ export default {
         // Add more cases if needed
       }
     },
-    myOrg: function() {
-      if (this.myOrg.length >= 3 && !this.gpsCheck) {
-        this.getLocations();
-      }
-    },
-    destinationPos: function() {
-      if (this.destinationPos.length >= 3)
-        // Add any logic related to the destinationPos here
-        // You can call getLocations or perform any other necessary actions
-        this.getLocations2();
-    },
+ 
   },
   methods: {
-    onAutocompleteChange: async function (item) {
+    onAutocompleteChange: async function(item) {
       // 'item' contains the selected item
       if (item) {
         this.origin = item.text;
       } else {
-        this.origin = ''; // Handle the case when no item is selected
+        this.origin = ""; // Handle the case when no item is selected
       }
 
       // The rest of your code remains the same
@@ -257,13 +205,45 @@ export default {
           value: item, // You can customize this based on your data structure
         }));
       } catch (error) {
-        console.error('Error fetching autocomplete data', error);
+        console.error("Error fetching autocomplete data", error);
+      } finally {
+        this.loading = false;
+      }
+    },
+    onAutocompleteChange2: async function(item2) {
+      // 'item' contains the selected item
+      if (item2) {
+        this.dest = item2.text2;
+      } else {
+        this.dest = ""; // Handle the case when no item is selected
+      }
+
+      // The rest of your code remains the same
+      this.loading = true;
+
+      try {
+        const response2 = await fetch(
+          `https://prime.promiles.com/WebAPI/api/ValidateLocation?locationText=${this.searchInput2}&apikey=bU03MSs2UjZIS21HMG5QSlIxUTB4QT090`
+        );
+
+
+        if (!response2.ok) {
+          throw new Error(`HTTP error! Status: ${response2.status}`);
+        }
+
+        const data2 = await response2.json();
+
+        this.autocompleteItems2 = data2.map((item2) => ({
+          text: `${item2.City}, ${item2.State}, ${item2.PostalCode}`,
+          value: item2, // You can customize this based on your data structure
+        }));
+      } catch (error) {
+        console.error("Error fetching autocomplete data", error);
       } finally {
         this.loading = false;
       }
     },
 
-  
     setOriginToCurrentLocation() {
       if (navigator.geolocation) {
         var options = {
@@ -290,7 +270,7 @@ export default {
       this.$store.commit("setLon", lon);
       this.$emit("lon", this.lon);
       console.log(this.$store.state.lon);
-      this.origin = this.$store.state.lat + ":" + this.$store.state.lon;
+      this.selectedItem = this.$store.state.lat + ":" + this.$store.state.lon;
     },
 
     error(err) {
@@ -414,7 +394,7 @@ export default {
   font-size: 10px;
 }
 
-.theme--dark.v-icon{
+.theme--dark.v-icon {
   color: rgb(20, 10, 91);
 }
 

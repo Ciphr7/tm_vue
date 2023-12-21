@@ -8293,11 +8293,6 @@
   "resolved" "https://registry.npmjs.org/uuid/-/uuid-3.4.0.tgz"
   "version" "3.4.0"
 
-"v-autocomplete@^1.8.2":
-  "integrity" "sha512-pnoApQCFz7siSyo0zs1SSBcnvtldaDbOok6B0GG6Cw/uWGaLm6MPsLJzWFtQMTUsVfpYLe3/xKwU4I6r2dz1bg=="
-  "resolved" "https://registry.npmjs.org/v-autocomplete/-/v-autocomplete-1.8.2.tgz"
-  "version" "1.8.2"
-
 "v8-compile-cache@^2.0.3":
   "integrity" "sha512-l8lCEmLcLYZh4nbunNZvQCJc5pv7+RCwa8q/LdUx8u7lsWvPDKmpodJAJNwkAhJC//dFY48KuIEmjtd4RViDrA=="
   "resolved" "https://registry.npmjs.org/v8-compile-cache/-/v8-compile-cache-2.3.0.tgz"
