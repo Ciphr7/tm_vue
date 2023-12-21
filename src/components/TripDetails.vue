@@ -21,80 +21,19 @@
 
       <v-container>
         <v-autocomplete
-        v-model="origin"
+        v-model="selectedItem"
         :items="autocompleteItems"
         :loading="loading"
         :search-input.sync="searchInput"
         :min-length="3"
         @input="onAutocompleteChange"
+        item-text="text"
+        item-value="value"
         label="Origin"
       ></v-autocomplete>
     </v-container>
 
-      <section class="dropdown-wrapper">
-        <div @click="isVisible = !isVisible" class="selected-item">
-          <span v-if="selectedItem">{{
-            selectedItem.City +
-              "," +
-              selectedItem.State +
-              ", " +
-              selectedItem.PostalCode
-          }}</span>
-          <span v-else
-            ><p class="custom-switch">{{ this.myOrg }}</p></span
-          >
 
-          <svg
-            :class="isVisible ? 'dropdown' : ''"
-            class="drop-down-icon"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            width="24"
-            height="24"
-          >
-            <path fill="none" d="M0 0h24v24H0z" />
-            <path d="M12 8l6 6H6z" />
-          </svg>
-        </div>
-
-        <div
-          :class="isVisible ? 'visible' : 'invisible'"
-          class="dropdown-popover"
-        >
-          <!-- First Input Field -->
-          <v-text-field
-            label="Origin"
-            :rules="rules"
-            hide-details="auto"
-            class="px-2"
-            v-model="myOrg"
-            type="text"
-            placeholder="Search for Location"
-            tabindex="1"
-          ></v-text-field>
-
-          <!-- Second Input Field -->
-
-          <span v-if="results.length == 0">No Data Available</span>
-          <div class="options">
-            <ul>
-              <li
-                @click="selectItem(Location)"
-                v-for="(Location, index) in results"
-                :key="`City-${index}`"
-              >
-                {{
-                  Location.City +
-                    ", " +
-                    Location.State +
-                    ", " +
-                    Location.PostalCode
-                }}
-              </li>
-            </ul>
-          </div>
-        </div>
-      </section>
       <div class="py-1"></div>
       <section class="dropdown-wrapper2">
         <div @click="isVisible2 = !isVisible2" class="selected-item2">
@@ -251,7 +190,7 @@ export default {
       if (newValue) {
         this.$root.$on("lat", this.lat);
         this.$root.$on("lon", this.lon);
-        this.myOrg = "";
+        this.orgin = "";
         this.setOriginToCurrentLocation();
       } else {
         // Don't forget to remove the event listener to avoid memory leaks
@@ -259,8 +198,8 @@ export default {
         this.$root.$off("lon", this.lon);
         this.$store.state.lat = "";
         this.$store.state.lon = "";
-        this.myOrg = "";
-        this.getLocations();
+        this.orgin = "";
+        this.onAutocompleteChange();
       }
     },
     selectedRoutingMethod: function(newValue) {
@@ -291,7 +230,15 @@ export default {
     },
   },
   methods: {
-    onAutocompleteChange: async function () {
+    onAutocompleteChange: async function (item) {
+      // 'item' contains the selected item
+      if (item) {
+        this.origin = item.text;
+      } else {
+        this.origin = ''; // Handle the case when no item is selected
+      }
+
+      // The rest of your code remains the same
       this.loading = true;
 
       try {
@@ -315,6 +262,7 @@ export default {
         this.loading = false;
       }
     },
+
   
     setOriginToCurrentLocation() {
       if (navigator.geolocation) {
@@ -342,7 +290,7 @@ export default {
       this.$store.commit("setLon", lon);
       this.$emit("lon", this.lon);
       console.log(this.$store.state.lon);
-      this.myOrg = this.$store.state.lat + ":" + this.$store.state.lon;
+      this.origin = this.$store.state.lat + ":" + this.$store.state.lon;
     },
 
     error(err) {
