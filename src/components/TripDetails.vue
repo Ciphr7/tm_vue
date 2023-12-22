@@ -8,7 +8,7 @@
               id="SetToCurrentLocation"
               class="py-1 custom-switch"
               color="red"
-              v-model="gpsCheck"
+              v-model="gpsCheckHandler"
               :label="`Set Origin to My GPS Location`"
             ></v-switch>
           </v-col>
@@ -24,9 +24,11 @@
           </v-col>
         </v-row>
       </v-container>
+      {{this.$store.state.lat}} {{this.$store.state.lon}}
 
       <v-container>
         <v-autocomplete
+        
           v-model="selectedItem"
           :items="autocompleteItems"
           :loading="loading"
@@ -95,6 +97,8 @@ export default {
   name: "TripDetail",
   mounted() {},
   data: () => ({
+    lon: 0,
+    lat: 0,
     newValue: null,
     origin: "",
     dest:"",
@@ -116,7 +120,7 @@ export default {
     tollCheck: false,
     url: "https://prime.promiles.com/WebAPI/api/ValidateLocation?locationText=",
     apikey: lookUpKey,
-
+    dialog: false,
     results: [],
     results2: [],
     selectedItem: null,
@@ -133,23 +137,39 @@ export default {
       // Calculate the color based on the value of gpsCheck
       return this.gpsCheck ? "red" : "white";
     },
+
+    gpsCheckHandler: {
+      
+      get() {
+    return this.gpsCheck;
   },
-  watch: {   
-    gpsCheck: function(newValue) {
+    set(newValue) {
+      console.log("gpsCheck:", newValue);
+
       if (newValue) {
         this.$root.$on("lat", this.lat);
         this.$root.$on("lon", this.lon);
-        console.log(this.$store.state.lon);
+        this.selectedItem = this.$store.state.lat, this.$store.state.lon;
         this.setOriginToCurrentLocation();
       } else {
         // Don't forget to remove the event listener to avoid memory leaks
         this.$root.$off("lat", this.lat);
         this.$root.$off("lon", this.lon);
         this.$store.state.lat = "";
-        
-        this.onAutocompleteChange();
+        this.$store.state.lon = "";
+        this.selectedItem = ""; // Reset the selectedItem when gpsCheck is false
       }
+
+      // Add console logs for debugging
+      console.log("lat:", this.$store.state.lat);
+      console.log("lon:", this.$store.state.lon);
+      console.log("selectedItem:", this.selectedItem);
     },
+  }
+
+  },
+  watch: {   
+ 
     searchInput: function(newSearchInput) {
       if (newSearchInput.length >= 3) {
         this.onAutocompleteChange();
@@ -179,6 +199,44 @@ export default {
  
   },
   methods: {
+    openDialog() {
+      this.dialog = true;
+    },
+    closeDialog() {
+      this.dialog = false;
+    },
+  
+    setOriginToCurrentLocation() {
+      if (navigator.geolocation) {
+        var options = {
+          maximumAge: 0,
+          timeout: 30000,
+          enableHighAccuracy: true,
+        };
+        navigator.geolocation.getCurrentPosition(
+          this.success.bind(this),
+          this.error.bind(this),
+          [options]
+        );
+      } else {
+        alert("User did not allow access to GPS location");
+      }
+    },
+
+    success(position) {
+      var lat = position.coords.latitude;
+      var lon = position.coords.longitude;
+
+      this.$store.commit("setLat", lat);
+      this.$emit("lat", this.lat);
+      this.$store.commit("setLon", lon);
+      this.$emit("lon", this.lon);
+     
+    },
+
+    error(err) {
+      console.warn(`ERROR(${err.code}): ${err.message}`);
+    },
     onAutocompleteChange: async function(item) {
       // 'item' contains the selected item
       if (item) {
@@ -221,7 +279,6 @@ export default {
 
       // The rest of your code remains the same
       this.loading = true;
-
       try {
         const response2 = await fetch(
           `https://prime.promiles.com/WebAPI/api/ValidateLocation?locationText=${this.searchInput2}&apikey=bU03MSs2UjZIS21HMG5QSlIxUTB4QT090`
@@ -245,43 +302,6 @@ export default {
       }
     },
 
-    setOriginToCurrentLocation() {
-      if (navigator.geolocation) {
-        var options = {
-          maximumAge: 0,
-          timeout: 30000,
-          enableHighAccuracy: true,
-        };
-        navigator.geolocation.getCurrentPosition(
-          this.success.bind(this),
-          this.error.bind(this),
-          [options]
-        );
-      } else {
-        alert("User did not allow access to GPS location");
-      }
-    },
-
-    success(position) {
-      var lat = position.coords.latitude;
-      var lon = position.coords.longitude;
-
-      this.$store.commit("setLat", lat);
-      this.$emit("lat", this.lat);
-      this.$store.commit("setLon", lon);
-      this.$emit("lon", this.lon);
-      console.log(this.$store.state.lon);
-      this.selectedItem = this.$store.state.lat + ":" + this.$store.state.lon;
-    },
-
-    error(err) {
-      console.warn(`ERROR(${err.code}): ${err.message}`);
-    },
-
-   
-
-  
-   
     testRunTrip() {
       const trip = {
         TripLegs: [
@@ -334,7 +354,7 @@ export default {
       })
         .then((response) => response.json())
         .then((data) => {
-          console.log(this.myOrg);
+          console.log(this.selectedItem);
           console.log(JSON.stringify(data));
           this.tresults = data;
           this.$store.commit("setTResults", data);
@@ -349,207 +369,5 @@ export default {
 };
 </script>
 <style scoped lang="scss">
-.custom-switch {
-  font-size: 20px;
-}
-.v-label {
-  font-size: 10px;
-}
 
-.theme--dark.v-icon {
-  color: rgb(20, 10, 91);
-}
-
-.v-input--selection-controls {
-  font-size: 10px;
-  height: 10px;
-}
-
-#auto-complete {
-  font-family: "Avenir", Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: start;
-  color: #be1f1f;
-  margin-top: 0px;
-}
-.form-control {
-  background: #2c1515;
-}
-
-.dropdown-wrapper {
-  max-width: 100%;
-  position: relative;
-  margin: 5 auto;
-  z-index: 3;
-  background: #c8c4c4;
-  .selected-item {
-    height: 40px;
-    border-bottom: 2px solid rgb(228, 61, 61);
-    border-radius: 5px;
-    padding: 5px 10px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-
-    font-weight: 400;
-
-    .drop-down-icon {
-      transform: rotate(0deg);
-      transition: all 0.4s ease;
-      &.dropdown {
-        transform: rotate(180deg);
-      }
-    }
-  }
-  .dropdown-popover {
-    z-index: 1;
-    border: 2px solid rgb(157, 4, 4);
-    top: 46px;
-    left: 0;
-    right: 0;
-    color: red;
-    max-width: 100%;
-    padding: 1px;
-    visibility: hidden;
-    transition: all 0.5s ease-in-out;
-    max-height: 0px;
-    overflow: hidden;
-
-    &.visible {
-      max-height: 400px;
-      visibility: visible;
-    }
-  }
-  input {
-    width: 90%;
-    height: 30px;
-    border: 2px solid lightgray;
-    font-size: 16px;
-    padding-left: 8px;
-    margin-bottom: 5px;
-  }
-
-  .options {
-    width: 100%;
-    position: absolute;
-
-    ul {
-      list-style: none;
-      text-align: left;
-      padding-left: 8px;
-      max-height: 200px;
-      overflow-y: scroll;
-      border: 1px solid rgb(63, 15, 15);
-
-      li {
-        width: 100%;
-        border-bottom: 1px solid lightgray;
-        padding: 10px;
-        background-color: #d81a1a;
-        cursor: pointer;
-        color: #fff;
-        font-size: 16px;
-        &:hover {
-          background: #70878a;
-          color: #fff;
-          font-weight: bold;
-        }
-      }
-    }
-  }
-}
-
-#auto-complete2 {
-  font-family: "Avenir", Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: start;
-  color: #be1f1f;
-  margin-top: 0px;
-}
-.form-control2 {
-  background: #2c1515;
-}
-
-.dropdown-wrapper2 {
-  max-width: 100%;
-  position: relative;
-  margin: 5 auto;
-  z-index: 1;
-  background: #c8c4c4;
-  .selected-item2 {
-    height: 40px;
-    border-bottom: 2px solid rgb(228, 61, 61);
-    border-radius: 5px;
-    padding: 5px;
-    margin: 5px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-
-    font-weight: 400;
-
-    .drop-down-icon2 {
-      transform: rotate(0deg);
-      transition: all 0.4s ease;
-      &.dropdown2 {
-        transform: rotate(180deg);
-      }
-    }
-  }
-  .dropdown-popover2 {
-    border: 2px solid rgb(157, 4, 4);
-    top: 46px;
-    left: 0;
-    right: 0;
-    color: red;
-    max-width: 100%;
-    padding: 1px;
-    visibility: hidden;
-    transition: all 0.5s ease-in-out;
-    max-height: 0px;
-    overflow: hidden;
-    &.visible2 {
-      max-height: 400px;
-      visibility: visible;
-    }
-  }
-  input2 {
-    width: 90%;
-    height: 30px;
-    border: 2px solid lightgray;
-    font-size: 16px;
-    padding-left: 8px;
-    margin-bottom: 5px;
-  }
-
-  .options2 {
-    width: 100%;
-
-    ul {
-      list-style: none;
-      text-align: left;
-      padding-left: 8px;
-      max-height: 200px;
-      overflow-y: scroll;
-      border: 1px solid rgb(63, 15, 15);
-
-      li {
-        width: 100%;
-        border-bottom: 1px solid lightgray;
-        padding: 10px;
-        background-color: #d81a1a;
-        cursor: pointer;
-        color: #fff;
-        font-size: 16px;
-        &:hover {
-          background: #70878a;
-          color: #fff;
-          font-weight: bold;
-        }
-      }
-    }
-  }
-}
 </style>

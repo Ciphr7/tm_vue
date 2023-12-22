@@ -8,8 +8,8 @@ export default new Vuex.Store({
 
   state: {
     tresults: [],
-    lat: Number,
-    lon: Number
+    lat: [],
+    lon: []
   },
   mutations: {
     setTResults(state, data) {
