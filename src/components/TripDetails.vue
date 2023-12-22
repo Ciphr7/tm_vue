@@ -95,13 +95,14 @@ export default {
   name: "TripDetail",
   mounted() {},
   data: () => ({
+    newValue: null,
     origin: "",
     dest:"",
     autocompleteItems: [],
     autocompleteItems2: [],
     loading: false,
-    searchInput: "",
-    searchInput2: "",
+    searchInput: [],
+    searchInput2: [],
     
     r_items: ["practical", "Shortest", "Interstate"],
     value: false,
@@ -133,7 +134,22 @@ export default {
       return this.gpsCheck ? "red" : "white";
     },
   },
-  watch: {
+  watch: {   
+    gpsCheck: function(newValue) {
+      if (newValue) {
+        this.$root.$on("lat", this.lat);
+        this.$root.$on("lon", this.lon);
+        console.log(this.$store.state.lon);
+        this.setOriginToCurrentLocation();
+      } else {
+        // Don't forget to remove the event listener to avoid memory leaks
+        this.$root.$off("lat", this.lat);
+        this.$root.$off("lon", this.lon);
+        this.$store.state.lat = "";
+        
+        this.onAutocompleteChange();
+      }
+    },
     searchInput: function(newSearchInput) {
       if (newSearchInput.length >= 3) {
         this.onAutocompleteChange();
@@ -144,22 +160,7 @@ export default {
         this.onAutocompleteChange2();
       }
     },
-    gpsCheck: function(newValue) {
-      if (newValue) {
-        this.$root.$on("lat", this.lat);
-        this.$root.$on("lon", this.lon);
-        this.selectedItem = "";
-        this.setOriginToCurrentLocation();
-      } else {
-        // Don't forget to remove the event listener to avoid memory leaks
-        this.$root.$off("lat", this.lat);
-        this.$root.$off("lon", this.lon);
-        this.$store.state.lat = "";
-        this.$store.state.lon = "";
-        this.selectedItem = "";
-        this.onAutocompleteChange();
-      }
-    },
+ 
     selectedRoutingMethod: function(newValue) {
       // You can add any logic here based on the selected value
       switch (newValue) {
@@ -277,49 +278,10 @@ export default {
       console.warn(`ERROR(${err.code}): ${err.message}`);
     },
 
-    async getLocations() {
-      clearTimeout(this.timeout);
-      this.timeout = setTimeout(() => {
-        fetch(this.url + this.myOrg + this.apikey)
-          .then((res) => res.json())
-          .then((json) => {
-            console.log(json);
-            this.results = json;
-          });
-      }, this.debounceMilliseconds);
-    },
-    async getLocations2() {
-      clearTimeout(this.timeout);
-      this.timeout = setTimeout(() => {
-        fetch(this.url + this.destinationPos + this.apikey)
-          .then((res) => res.json())
-          .then((json) => {
-            console.log(json);
-            this.results2 = json;
-          });
-      }, this.debounceMilliseconds);
-    },
+   
 
-    selectItem(Location) {
-      this.selectedItem = Location;
-
-      this.isVisible = false;
-    },
-    selectItem2(Location2) {
-      this.selectedItem2 = Location2;
-
-      this.isVisible2 = false;
-    },
-    filteredLoctions() {
-      return this.userArray.filter((Location) => {
-        return Object.values(Location);
-      });
-    },
-    filteredLoctions2() {
-      return this.userArray.filter((Location2) => {
-        return Object.values(Location2);
-      });
-    },
+  
+   
     testRunTrip() {
       const trip = {
         TripLegs: [
