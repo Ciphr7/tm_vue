@@ -12,7 +12,7 @@
     "axios": "^0.24.0",
     "core-js": "^3.6.5",
     "roboto-fontface": "*",
-    "vue": "^2.6.11",
+    "vue": "^2.7.15",
     "vue-class-component": "^7.2.6",
     "vuetify": "^2.4.0",
     "vuex": "^2.5.0",

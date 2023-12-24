@@ -6,9 +6,15 @@
           <v-card class=" mx-0 px-0">
             <v-card-title class="headline ">Trip Summary</v-card-title>
             <v-card-text>
+              <h3>Trip Summary</h3>
+              <br>
+              <ul>
+                <li v-for="leg in $store.state.tresults.TripSummary" :key="leg.LegLabel ">
+                  <p>{{ leg.LegLabel }}:<strong> {{ leg.City }}, {{ leg.State }} </strong></p>
+                </li>
+              </ul>
               <div >
-                <p><strong>Origin:</strong> {{ $store.state.tresults.OriginLabel }}</p>
-                <p><strong>Destination:</strong> {{ $store.state.tresults.DestinationLabel }}</p>
+              
                 <p><strong>Trip Distance:</strong> {{ $store.state.tresults.TripDistance }} miles</p>
                 <p><strong>Trip Minutes:</strong> {{ ($store.state.tresults.TripMinutes / 60).toFixed(2)}} hours</p>
               </div>
@@ -21,13 +27,7 @@
                 </li>
               </ul>
 
-              <h3>Trip Summary</h3>
-              <br>
-              <ul>
-                <li v-for="leg in $store.state.tresults.TripSummary" :key="leg.LegLabel">
-                  <p><strong>{{ leg.LegLabel }}:</strong> {{ leg.LegMiles }} miles, {{ (leg.LegMinutes / 60).toFixed(2)}} hours</p>
-                </li>
-              </ul>
+              
             </v-card-text>
           </v-card>
         </v-col>

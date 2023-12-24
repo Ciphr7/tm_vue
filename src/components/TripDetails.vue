@@ -1,34 +1,24 @@
 <template>
   <div>
     <v-card class="mt-2 mx-1 px-1" elevation="9">
-      <v-container fluid>
+      <v-container>
         <v-row>
-          <v-col cols="10">
+          <v-col>
             <v-switch
               id="SetToCurrentLocation"
-              class="py-1 custom-switch"
+              class="py-1"
               color="red"
-              v-model="gpsCheckHandler"
+              v-model="gpsCheck"
               :label="`Set Origin to My GPS Location`"
             ></v-switch>
           </v-col>
 
-          <v-col cols="1">
-            <v-icon
-              :class="{ 'theme--dark': newValue }"
-              :color="iconColor"
-              class=" py-5"
-            >
-              mdi-access-point
-            </v-icon>
-          </v-col>
+          <v-icon :class="{ 'theme--dark': newValue }" :color="iconColor">
+            mdi-access-point
+          </v-icon>
         </v-row>
-      </v-container>
-      {{this.$store.state.lat}} {{this.$store.state.lon}}
 
-      <v-container>
         <v-autocomplete
-        
           v-model="selectedItem"
           :items="autocompleteItems"
           :loading="loading"
@@ -39,12 +29,8 @@
           item-value="value"
           label="Origin"
         ></v-autocomplete>
-      </v-container>
 
-      <div class="py-1"></div>
-      <template>
-        <section>
-          <v-autocomplete
+        <v-autocomplete
           v-model="selectedItem2"
           :items="autocompleteItems2"
           :loading="loading"
@@ -55,10 +41,10 @@
           item-value2="value"
           label="Destination"
         ></v-autocomplete>
-        </section>
-      </template>
-      <div class="px-2 my-2">
-        <v-card-text>Trip Options</v-card-text>
+      </v-container>
+
+      <div class="px-1 pb-1">
+        <v-card-text class="text-center">Trip Options</v-card-text>
         <v-select
           v-model="selectedRoutingMethod"
           :items="r_items"
@@ -66,22 +52,19 @@
           label="Routing Method"
         ></v-select>
         <v-switch
-          pa-5
           v-model="borderCheck"
           :label="`Close Borders`"
           color="red"
         ></v-switch>
         <v-switch
-          class="py-5 my-2"
+          class="py-1 my-1"
           v-model="tollCheck"
           :label="`Avoid Toll`"
           color="red"
         ></v-switch>
 
-        <div>
-          <v-btn @click="testRunTrip"> Run Trip </v-btn>
-          {{ this.tresults.TripDistance }}
-        </div>
+        <v-btn @click="testRunTrip"> Run Trip </v-btn>
+        {{ this.tresults.TripDistance }}
       </div>
     </v-card>
   </div>
@@ -97,17 +80,15 @@ export default {
   name: "TripDetail",
   mounted() {},
   data: () => ({
-    lon: 0,
-    lat: 0,
     newValue: null,
     origin: "",
-    dest:"",
+    dest: "",
     autocompleteItems: [],
     autocompleteItems2: [],
     loading: false,
-    searchInput: [],
-    searchInput2: [],
-    
+    searchInput: "",
+    searchInput2: "",
+
     r_items: ["practical", "Shortest", "Interstate"],
     value: false,
     right: true,
@@ -125,10 +106,9 @@ export default {
     results2: [],
     selectedItem: null,
     selectedItem2: null,
-    
-   
+
     timeout: null,
-    
+
     tresults: [],
     selectedRoutingMethod: "practical",
   }),
@@ -137,19 +117,15 @@ export default {
       // Calculate the color based on the value of gpsCheck
       return this.gpsCheck ? "red" : "white";
     },
-
-    gpsCheckHandler: {
-      
-      get() {
-    return this.gpsCheck;
   },
-    set(newValue) {
-      console.log("gpsCheck:", newValue);
 
+  watch: {
+    gpsCheck: function (newValue) {
       if (newValue) {
         this.$root.$on("lat", this.lat);
         this.$root.$on("lon", this.lon);
-        this.selectedItem = this.$store.state.lat, this.$store.state.lon;
+        console.log("gpsCheck:", newValue);
+
         this.setOriginToCurrentLocation();
       } else {
         // Don't forget to remove the event listener to avoid memory leaks
@@ -157,31 +133,32 @@ export default {
         this.$root.$off("lon", this.lon);
         this.$store.state.lat = "";
         this.$store.state.lon = "";
-        this.selectedItem = ""; // Reset the selectedItem when gpsCheck is false
+        this.selectedItem = "";
+        this.searchInput = "";
+
+        console.log("nn", this.$store.state.lat, this.$store.state.lon); // Reset the selectedItem when gpsCheck is false
       }
 
       // Add console logs for debugging
       console.log("lat:", this.$store.state.lat);
       console.log("lon:", this.$store.state.lon);
+      console.log("lat:", this.lat);
+      console.log("lon:", this.lon);
       console.log("selectedItem:", this.selectedItem);
     },
-  }
 
-  },
-  watch: {   
- 
-    searchInput: function(newSearchInput) {
-      if (newSearchInput.length >= 3) {
+    searchInput: function (newSearchInput) {
+      if (newSearchInput.length >= 3 && !this.gpsCheck) {
         this.onAutocompleteChange();
       }
     },
-    searchInput2: function(newSearchInput2) {
+    searchInput2: function (newSearchInput2) {
       if (newSearchInput2.length >= 3) {
         this.onAutocompleteChange2();
       }
     },
- 
-    selectedRoutingMethod: function(newValue) {
+
+    selectedRoutingMethod: function (newValue) {
       // You can add any logic here based on the selected value
       switch (newValue) {
         case "practical":
@@ -196,7 +173,6 @@ export default {
         // Add more cases if needed
       }
     },
- 
   },
   methods: {
     openDialog() {
@@ -205,7 +181,7 @@ export default {
     closeDialog() {
       this.dialog = false;
     },
-  
+
     setOriginToCurrentLocation() {
       if (navigator.geolocation) {
         var options = {
@@ -231,13 +207,13 @@ export default {
       this.$emit("lat", this.lat);
       this.$store.commit("setLon", lon);
       this.$emit("lon", this.lon);
-     
+      this.searchInput = this.$store.state.lat + " " + this.$store.state.lon;
     },
 
     error(err) {
       console.warn(`ERROR(${err.code}): ${err.message}`);
     },
-    onAutocompleteChange: async function(item) {
+    onAutocompleteChange: async function (item) {
       // 'item' contains the selected item
       if (item) {
         this.origin = item.text;
@@ -269,7 +245,7 @@ export default {
         this.loading = false;
       }
     },
-    onAutocompleteChange2: async function(item2) {
+    onAutocompleteChange2: async function (item2) {
       // 'item' contains the selected item
       if (item2) {
         this.dest = item2.text2;
@@ -283,7 +259,6 @@ export default {
         const response2 = await fetch(
           `https://prime.promiles.com/WebAPI/api/ValidateLocation?locationText=${this.searchInput2}&apikey=bU03MSs2UjZIS21HMG5QSlIxUTB4QT090`
         );
-
 
         if (!response2.ok) {
           throw new Error(`HTTP error! Status: ${response2.status}`);
@@ -368,6 +343,4 @@ export default {
   },
 };
 </script>
-<style scoped lang="scss">
-
-</style>
+<style scoped></style>
