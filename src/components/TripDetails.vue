@@ -20,6 +20,9 @@
 
         <v-autocomplete
           v-model="selectedItem"
+          base-color="red"
+          color = "red"
+          no-data-text="i.e. 19145"
           :items="autocompleteItems"
           :loading="loading"
           :search-input.sync="searchInput"
@@ -32,6 +35,8 @@
 
         <v-autocomplete
           v-model="selectedItem2"
+          color = "red"
+          no-data-text="i.e. houst, tx"
           :items="autocompleteItems2"
           :loading="loading"
           :search-input.sync="searchInput2"
