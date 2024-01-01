@@ -18,34 +18,19 @@
           </v-icon>
         </v-row>
 
-        <v-autocomplete
-          v-model="selectedItem"
-          base-color="red"
-          color = "red"
-          no-data-text="i.e. 19145"
-          :items="autocompleteItems"
-          :loading="loading"
-          :search-input.sync="searchInput"
-          :min-length="3"
-          @input="onAutocompleteChange"
-          item-text="text"
-          item-value="value"
-          label="Origin"
-        ></v-autocomplete>
-
-        <v-autocomplete
-          v-model="selectedItem2"
-          color = "red"
-          no-data-text="i.e. houst, tx"
-          :items="autocompleteItems2"
-          :loading="loading"
-          :search-input.sync="searchInput2"
-          :min-length="3"
-          @input="onAutocompleteChange2"
-          item-text2="text"
-          item-value2="value"
-          label="Destination"
-        ></v-autocomplete>
+        <template>
+          <Origin
+            :selectedItem="selectedItem"
+            :baseColor="baseColor"
+            :color="color"
+            :noDataText="noDataText"
+            :minLength="minLength"
+            :itemText="itemText"
+            :item-value="selectedItem ? String(selectedItem.value) : null"
+            :label="label"
+            @update:selectedItem="updateSelectedItem"
+          />
+        </template>
       </v-container>
 
       <div class="px-1 pb-1">
@@ -79,48 +64,64 @@
 //import autoComplete from "./autoComplete.vue"
 
 import { lookUpKey, tmAPIKey } from "./tmAPIKey";
+import Origin from "./Origin.vue";
 
 export default {
-  components: {},
+  components: { Origin },
   name: "TripDetail",
   mounted() {},
-  data: () => ({
-    newValue: null,
-    origin: "",
-    dest: "",
-    autocompleteItems: [],
-    autocompleteItems2: [],
-    loading: false,
-    searchInput: "",
-    searchInput2: "",
 
-    r_items: ["practical", "Shortest", "Interstate"],
-    value: false,
-    right: true,
-    rules: [
-      (value) => !!value || "Required.",
-      (value) => (value || "").length <= 20 || "Max 20 characters",
-    ],
-    gpsCheck: false,
-    borderCheck: false,
-    tollCheck: false,
-    url: "https://prime.promiles.com/WebAPI/api/ValidateLocation?locationText=",
-    apikey: lookUpKey,
-    dialog: false,
-    results: [],
-    results2: [],
-    selectedItem: null,
-    selectedItem2: null,
+  data() {
+    return {
+      selectedOrigin: null,
+      inputValue: "",
+      newValue: null,
+      origin: "",
+      dest: "",
+      baseColor: 'red',
+      color: 'red',
+      noDataText: 'i.e. 19145',
+      minLength: 3,
+      itemText: 'text',
+      itemValue: { value: null },
+      label: 'Origin',
+      autocompleteItems: [],
+      autocompleteItems2: [],
+      loading: false,
+      searchInput: "",
+      searchInput2: "",
 
-    timeout: null,
+      r_items: ["practical", "Shortest", "Interstate"],
+      value: false,
+      right: true,
+      rules: [
+        (value) => !!value || "Required.",
+        (value) => (value || "").length <= 20 || "Max 20 characters",
+      ],
+      gpsCheck: false,
+      borderCheck: false,
+      tollCheck: false,
+      url: "https://prime.promiles.com/WebAPI/api/ValidateLocation?locationText=",
+      apikey: lookUpKey,
+      dialog: false,
+      results: [],
+      results2: [],
+      selectedItem: null,
+      selectedItem2: null,
 
-    tresults: [],
-    selectedRoutingMethod: "practical",
-  }),
+      timeout: null,
+
+      tresults: [],
+      selectedRoutingMethod: "practical",
+    };
+  },
   computed: {
     iconColor() {
       // Calculate the color based on the value of gpsCheck
       return this.gpsCheck ? "red" : "white";
+    },
+    selectedItemValue() {
+      return this.selectedOrigin ? this.selectedOrigin.value : null;
     },
   },
 
@@ -152,11 +153,6 @@ export default {
       console.log("selectedItem:", this.selectedItem);
     },
 
-    searchInput: function (newSearchInput) {
-      if (newSearchInput.length >= 3 && !this.gpsCheck) {
-        this.onAutocompleteChange();
-      }
-    },
     searchInput2: function (newSearchInput2) {
       if (newSearchInput2.length >= 3) {
         this.onAutocompleteChange2();
@@ -180,6 +176,10 @@ export default {
     },
   },
   methods: {
+    updateSelectedItem(newValue) {
+      // Handle the updated selected item from the autocomplete component
+      this.selectedItem = newValue;
+    },
     openDialog() {
       this.dialog = true;
     },
@@ -218,38 +218,7 @@ export default {
     error(err) {
       console.warn(`ERROR(${err.code}): ${err.message}`);
     },
-    onAutocompleteChange: async function (item) {
-      // 'item' contains the selected item
-      if (item) {
-        this.origin = item.text;
-      } else {
-        this.origin = ""; // Handle the case when no item is selected
-      }
 
-      // The rest of your code remains the same
-      this.loading = true;
-
-      try {
-        const response = await fetch(
-          `https://prime.promiles.com/WebAPI/api/ValidateLocation?locationText=${this.searchInput}&apikey=bU03MSs2UjZIS21HMG5QSlIxUTB4QT090`
-        );
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-
-        const data = await response.json();
-
-        this.autocompleteItems = data.map((item) => ({
-          text: `${item.City}, ${item.State}, ${item.PostalCode}`,
-          value: item, // You can customize this based on your data structure
-        }));
-      } catch (error) {
-        console.error("Error fetching autocomplete data", error);
-      } finally {
-        this.loading = false;
-      }
-    },
     onAutocompleteChange2: async function (item2) {
       // 'item' contains the selected item
       if (item2) {
@@ -286,16 +255,13 @@ export default {
       const trip = {
         TripLegs: [
           {
-            Address:
-              this.selectedItem && this.selectedItem.Address
-                ? this.selectedItem.Address
-                : "",
-            City: this.selectedItem ? this.selectedItem.City : "",
-            State: this.selectedItem ? this.selectedItem.State : "",
-            PostalCode: this.selectedItem ? this.selectedItem.PostalCode : "",
+            Address: "",
+            City:  "",
+            State:  "",
+            PostalCode: "",
             Latitude: this.$store.state.lat,
             Longitude: this.$store.state.lon,
-            LocationText: "",
+            LocationText: this.selectedItem.text,
           },
           {
             Address:

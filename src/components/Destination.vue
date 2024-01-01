@@ -1,7 +1,7 @@
 <template>
   <section>
     <v-autocomplete
-      v-model="localSelectedItem"
+      v-model="localselectedItem2"
       :base-color="baseColor"
       :color="color"
       :no-data-text="noDataText"
@@ -11,7 +11,7 @@
       :min-length="minLength"
       @input="onAutocompleteChange"
       :item-text="itemText"
-      :item-value="selectedItem ? String(selectedItem.value) : null"
+      :item-value="selectedItem2"
       :label="label"
     ></v-autocomplete>
   </section>
@@ -20,7 +20,7 @@
 <script>
 export default {
   props: {
-    selectedItem: {
+    selectedItem2: {
       type: Object,
       default: null,
     },
@@ -45,45 +45,45 @@ export default {
       default: "text",
     },
     itemValue: {
-    type: String,
-    default: null,
-  },
+      type: String,
+      default: "value",
+    },
     label: {
       type: String,
-      default: "Origin",
+      default: "dest",
     },
   },
   data() {
     return {
       autocompleteItems: [],
       loading: false,
-      searchInput:  "",
-      origin: "", // Add this line if origin is used in the template
-      localSelectedItem: null,
+      searchInput: "",
+      dest: "", // Add this line if dest is used in the template
+      localselectedItem2: null,
     };
   },
   watch: {
-    selectedItem(newValue) {
-      // Update localSelectedItem when the prop changes
-      this.localSelectedItem = newValue;
+    selectedItem2(newValue) {
+      // Update localselectedItem2 when the prop changes
+      this.localselectedItem2 = newValue;
     },
     searchInput(newSearchInput) {
-    if (newSearchInput && newSearchInput.length >= this.minLength && !this.gpsCheck) {
-      this.onAutocompleteChange();
-    }
-  },
-    localSelectedItem(newValue) {
-      // Emit an event to notify the parent when localSelectedItem changes
-      this.$emit("update:selectedItem", newValue);
+      if (newSearchInput.length >= this.minLength && !this.gpsCheck) {
+        this.onAutocompleteChange();
+      }
+    },
+    localselectedItem2(newValue) {
+      // Emit an event to notify the parent when localselectedItem2 changes
+      this.$emit("update:selectedItem2", newValue);
     },
   },
   methods: {
     onAutocompleteChange: async function (item) {
       // 'item' contains the selected item
       if (item) {
-        this.origin = item.text;
+        this.dest = item.text;
       } else {
-        this.origin = ""; // Handle the case when no item is selected
+        this.dest = ""; // Handle the case when no item is selected
       }
 
       // The rest of your code remains the same
