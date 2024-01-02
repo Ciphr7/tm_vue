@@ -9,11 +9,12 @@
               <h3>Trip Summary</h3>
               <br>
               <ul>
-                <li v-for="leg in $store.state.tresults.TripSummary" :key="leg.LegLabel ">
-                  <p>{{ leg.LegLabel }}:<strong> {{ leg.City }}, {{ leg.State }} </strong></p>
+                <li v-for="leg in $store.state.tresults.TripLegs" :key="leg.LocationText ">
+                  <p>{{ leg.LocationText }}<strong></strong></p>
                 </li>
               </ul>
               <div >
+
               
                 <p><strong>Trip Distance:</strong> {{ $store.state.tresults.TripDistance }} miles</p>
                 <p><strong>Trip Minutes:</strong> {{ ($store.state.tresults.TripMinutes / 60).toFixed(2)}} hours</p>

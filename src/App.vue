@@ -1,7 +1,7 @@
 <template>
   <v-app id="inspire">
     <v-app-bar class="red lighten-1 white--text  d-flex justify-center " app>
-      <v-toolbar-title>TruckMiles 2024 <span className='font-extralight'>&reg;</span></v-toolbar-title>
+      <v-toolbar-title class="custom-title" >TRUCKMILES <span className='font-extralight'>&reg;</span></v-toolbar-title>
     </v-app-bar>
 
     <v-main>
@@ -28,3 +28,9 @@ export default {
   
 };
 </script>
+
+<style>
+.custom-title {
+  font-size: 25px; /* Adjust the font size to your preference */
+}
+</style>

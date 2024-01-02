@@ -30,6 +30,19 @@
             :label="label"
             @update:selectedItem="updateSelectedItem"
           />
+
+          <Destination
+            :selectedItem="selectedItem2"
+            :baseColor="baseColor"
+            :color="color"
+            :noDataText="noDataText2"
+            :minLength="minLength"
+            :itemText="itemText2"
+            :item-value="selectedItem2 ? String(selectedItem2.value) : null"
+            :label="label2"
+            @update:selectedItem2="updateSelectedItem2"
+          />
+
         </template>
       </v-container>
 
@@ -65,15 +78,17 @@
 
 import { lookUpKey, tmAPIKey } from "./tmAPIKey";
 import Origin from "./Origin.vue";
+import Destination from "./Destination.vue";
 
 export default {
-  components: { Origin },
+  components: { Origin, Destination },
   name: "TripDetail",
   mounted() {},
 
   data() {
     return {
       selectedOrigin: null,
+      selectedDestination: null,
       inputValue: "",
       newValue: null,
       origin: "",
@@ -81,10 +96,13 @@ export default {
       baseColor: 'red',
       color: 'red',
       noDataText: 'i.e. 19145',
+      noDataText2: 'i.e. Houston, tx',
       minLength: 3,
       itemText: 'text',
+      itemText2: 'text2',
       itemValue: { value: null },
       label: 'Origin',
+      label2: 'Destination',
       autocompleteItems: [],
       autocompleteItems2: [],
       loading: false,
@@ -123,6 +141,9 @@ export default {
     selectedItemValue() {
       return this.selectedOrigin ? this.selectedOrigin.value : null;
     },
+    selectedItemValue2() {
+      return this.selectedDestination ? this.selectedDstination.value : null;
+    },
   },
 
   watch: {
@@ -153,11 +174,6 @@ export default {
       console.log("selectedItem:", this.selectedItem);
     },
 
-    searchInput2: function (newSearchInput2) {
-      if (newSearchInput2.length >= 3) {
-        this.onAutocompleteChange2();
-      }
-    },
 
     selectedRoutingMethod: function (newValue) {
       // You can add any logic here based on the selected value
@@ -179,6 +195,10 @@ export default {
     updateSelectedItem(newValue) {
       // Handle the updated selected item from the autocomplete component
       this.selectedItem = newValue;
+    },
+    updateSelectedItem2(newValue2) {
+      // Handle the updated selected item from the autocomplete component
+      this.selectedItem2 = newValue2;
     },
     openDialog() {
       this.dialog = true;
@@ -219,37 +239,7 @@ export default {
       console.warn(`ERROR(${err.code}): ${err.message}`);
     },
 
-    onAutocompleteChange2: async function (item2) {
-      // 'item' contains the selected item
-      if (item2) {
-        this.dest = item2.text2;
-      } else {
-        this.dest = ""; // Handle the case when no item is selected
-      }
-
-      // The rest of your code remains the same
-      this.loading = true;
-      try {
-        const response2 = await fetch(
-          `https://prime.promiles.com/WebAPI/api/ValidateLocation?locationText=${this.searchInput2}&apikey=bU03MSs2UjZIS21HMG5QSlIxUTB4QT090`
-        );
-
-        if (!response2.ok) {
-          throw new Error(`HTTP error! Status: ${response2.status}`);
-        }
-
-        const data2 = await response2.json();
-
-        this.autocompleteItems2 = data2.map((item2) => ({
-          text: `${item2.City}, ${item2.State}, ${item2.PostalCode}`,
-          value: item2, // You can customize this based on your data structure
-        }));
-      } catch (error) {
-        console.error("Error fetching autocomplete data", error);
-      } finally {
-        this.loading = false;
-      }
-    },
+    
 
     testRunTrip() {
       const trip = {
@@ -264,16 +254,13 @@ export default {
             LocationText: this.selectedItem.text,
           },
           {
-            Address:
-              this.selectedItem2 && this.selectedItem2.Address
-                ? this.selectedItem2.Address
-                : "",
-            City: this.selectedItem2 ? this.selectedItem2.City : "",
-            State: this.selectedItem2 ? this.selectedItem2.State : "",
-            PostalCode: this.selectedItem2 ? this.selectedItem2.PostalCode : "",
+            Address: "",
+            City: "",
+            State: "",
+            PostalCode: "",
             Latitude: "",
             Longitude: "",
-            LocationText: "",
+            LocationText: this.selectedItem2.text,
           },
         ],
         UnitMPG: 6,

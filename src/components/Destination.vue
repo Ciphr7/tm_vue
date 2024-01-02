@@ -7,11 +7,11 @@
       :no-data-text="noDataText"
       :items="autocompleteItems"
       :loading="loading"
-      :search-input.sync="searchInput"
+      :search-input.sync="searchInput2"
       :min-length="minLength"
-      @input="onAutocompleteChange"
-      :item-text="itemText"
-      :item-value="selectedItem2"
+      @input="onAutocompleteChange2"
+      :item-text="itemText2"
+      :item-value="selectedItem2 ? String(selectedItem2.value) : null"
       :label="label"
     ></v-autocomplete>
   </section>
@@ -34,51 +34,51 @@ export default {
     },
     noDataText: {
       type: String,
-      default: "i.e. 19145",
+      default: "i.e. Houston, tx",
     },
     minLength: {
       type: Number,
       default: 3,
     },
-    itemText: {
+    itemText2: {
       type: String,
       default: "text",
     },
-    itemValue: {
-      type: String,
-      default: "value",
-    },
+    itemValue2: {
+    type: String,
+    default: null,
+  },
     label: {
       type: String,
-      default: "dest",
+      default: "Destination",
     },
   },
   data() {
     return {
       autocompleteItems: [],
       loading: false,
-      searchInput: "",
-      dest: "", // Add this line if dest is used in the template
+      searchInput2:  "",
+      dest: "", // Add this line if origin is used in the template
       localselectedItem2: null,
     };
   },
   watch: {
-    selectedItem2(newValue) {
+    selectedItem2(newValue2) {
       // Update localselectedItem2 when the prop changes
-      this.localselectedItem2 = newValue;
+      this.localselectedItem2 = newValue2;
     },
-    searchInput(newSearchInput) {
-      if (newSearchInput.length >= this.minLength && !this.gpsCheck) {
-        this.onAutocompleteChange();
-      }
-    },
-    localselectedItem2(newValue) {
-      // Emit an event to notify the parent when localselectedItem2 changes
-      this.$emit("update:selectedItem2", newValue);
+    searchInput2(newSearchInput) {
+    if (newSearchInput && newSearchInput.length >= this.minLength) {
+      this.onAutocompleteChange2();
+    }
+  },
+    localselectedItem2(newValue2) {
+      // Emit an event to notify the parent when localSelectedItem changes
+      this.$emit("update:selectedItem2", newValue2);
     },
   },
   methods: {
-    onAutocompleteChange: async function (item) {
+    onAutocompleteChange2: async function (item) {
       // 'item' contains the selected item
       if (item) {
         this.dest = item.text;
@@ -91,7 +91,7 @@ export default {
 
       try {
         const response = await fetch(
-          `https://prime.promiles.com/WebAPI/api/ValidateLocation?locationText=${this.searchInput}&apikey=bU03MSs2UjZIS21HMG5QSlIxUTB4QT090`
+          `https://prime.promiles.com/WebAPI/api/ValidateLocation?locationText=${this.searchInput2}&apikey=bU03MSs2UjZIS21HMG5QSlIxUTB4QT090`
         );
 
         if (!response.ok) {
