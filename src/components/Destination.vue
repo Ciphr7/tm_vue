@@ -11,7 +11,7 @@
       :min-length="minLength"
       @input="onAutocompleteChange2"
       :item-text="itemText2"
-      :item-value="selectedItem2 ? String(selectedItem2.value) : null"
+      :item-value="itemText2 ? String(itemText2) : null"
       :label="label"
     ></v-autocomplete>
   </section>

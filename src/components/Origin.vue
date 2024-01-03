@@ -11,7 +11,7 @@
       :min-length="minLength"
       @input="onAutocompleteChange"
       :item-text="itemText"
-      :item-value="selectedItem ? String(selectedItem.value) : null"
+      :item-value="itemText ? String(itemText) : null"
       :label="label"
     ></v-autocomplete>
   </section>
@@ -21,7 +21,7 @@
 export default {
   props: {
     selectedItem: {
-      type: Object,
+      type: String,
       default: null,
     },
     baseColor: {

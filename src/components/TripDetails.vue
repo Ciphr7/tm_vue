@@ -251,7 +251,7 @@ export default {
             PostalCode: "",
             Latitude: this.$store.state.lat,
             Longitude: this.$store.state.lon,
-            LocationText: this.selectedItem.text,
+            LocationText: this.selectedItem,
           },
           {
             Address: "",
@@ -260,7 +260,7 @@ export default {
             PostalCode: "",
             Latitude: "",
             Longitude: "",
-            LocationText: this.selectedItem2.text,
+            LocationText: this.selectedItem2,
           },
         ],
         UnitMPG: 6,

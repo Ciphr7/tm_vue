@@ -1,43 +1,54 @@
 <template>
- 
-    <v-container class=" mx-0 px-0" >
-      <v-row justify="center" align="center" class="mt-5">
-        <v-col>
-          <v-card class=" mx-0 px-0">
-            <v-card-title class="headline ">Trip Summary</v-card-title>
-            <v-card-text>
-              <h3>Trip Summary</h3>
-              <br>
-              <ul>
-                <li v-for="leg in $store.state.tresults.TripLegs" :key="leg.LocationText ">
-                  <p>{{ leg.LocationText }}<strong></strong></p>
-                </li>
-              </ul>
-              <div >
+  <v-container class="mx-0 px-0">
+    <v-row justify="center" align="center" class="mt-5">
+      <v-col>
+        <v-card class="mx-0 px-0">
+          <v-card-title class="headline">Trip Summary</v-card-title>
+          <v-card-text>
+            <h3>Trip Summary</h3>
+            <br />
+            <ul>
+              <li
+                v-for="leg in $store.state.tresults.TripLegs"
+                :key="leg.LocationText + leg.UniqueIdentifier"
+              >
+                <p>{{ leg.LocationText }}<strong></strong></p>
+              </li>
+            </ul>
+            <div>
+              <p>
+                <strong>Trip Distance:</strong>
+                {{ $store.state.tresults.TripDistance }} miles
+              </p>
+              <p>
+                <strong>Trip Minutes:</strong>
+                {{ ($store.state.tresults.TripMinutes / 60).toFixed(2) }} hours
+              </p>
+            </div>
 
-              
-                <p><strong>Trip Distance:</strong> {{ $store.state.tresults.TripDistance }} miles</p>
-                <p><strong>Trip Minutes:</strong> {{ ($store.state.tresults.TripMinutes / 60).toFixed(2)}} hours</p>
-              </div>
-
-              <h3>Jurisdiction Mileage</h3>
-              <ul>
-                <li v-for="mileage in $store.state.tresults.JurisdictionMileage" :key="mileage.State">
-                  <p><strong>{{ mileage.State }}:</strong> {{ mileage.TotalMiles }} miles</p>
-                  <p>Toll Miles: {{ mileage.TollMiles }}, Non-Toll Miles: {{ mileage.NonTollMiles }}</p>
-                </li>
-              </ul>
-
-              
-            </v-card-text>
-          </v-card>
-        </v-col>
-      </v-row>
-    </v-container>
- 
+            <h3>Jurisdiction Mileage</h3>
+            <ul>
+              <li
+                v-for="mileage in $store.state.tresults.JurisdictionMileage"
+                :key="mileage.State"
+              >
+                <p>
+                  <strong>{{ mileage.State }}:</strong>
+                  {{ mileage.TotalMiles }} miles
+                </p>
+                <p>
+                  Toll Miles: {{ mileage.TollMiles }}, Non-Toll Miles:
+                  {{ mileage.NonTollMiles }}
+                </p>
+              </li>
+            </ul>
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 <script>
-
 export default {
   props: ["tresults"],
 
