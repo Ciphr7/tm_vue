@@ -1,6 +1,27 @@
 <template>
-  <section>
+  <div>
+    <v-container>
+      <section>
+        <v-row>
+          <v-col>
+            <v-switch
+              id="SetToCurrentLocation"
+              class="py-1"
+              color="red"
+              v-model="gpsCheck"
+              :label="`Set Origin to My GPS Location`"
+            ></v-switch>
+          </v-col>
+
+          <v-icon :class="{ 'theme--dark': newValue }" :color="iconColor">
+            mdi-access-point
+          </v-icon>
+        </v-row>
+      </section>
+    </v-container>
+
     <v-autocomplete
+      v-if="!gpsCheck"
       v-model="localSelectedItem"
       :base-color="baseColor"
       :color="color"
@@ -11,17 +32,24 @@
       :min-length="minLength"
       @input="onAutocompleteChange"
       :item-text="itemText"
-      :item-value="itemText ? String(itemText) : null"
+      :item-value="itemValue ? String(itemValue) : null"
       :label="label"
+      @update:selectedItem="updateSelectedItem"
     ></v-autocomplete>
-  </section>
+
+    <div v-else>
+      
+      <div>Using Coordinates as Origin: {{ this.$store.state.lat }}, {{ this.$store.state.lon }}</div>
+      <!-- Use this info as needed -->
+    </div>
+  </div>
 </template>
 
 <script>
 export default {
   props: {
     selectedItem: {
-      type: String,
+      type: Object,
       default: null,
     },
     baseColor: {
@@ -45,9 +73,9 @@ export default {
       default: "text",
     },
     itemValue: {
-    type: String,
-    default: null,
-  },
+      type: String,
+      default: null,
+    },
     label: {
       type: String,
       default: "Origin",
@@ -55,29 +83,91 @@ export default {
   },
   data() {
     return {
+      gpsCheck: false,
+      newValue: null,
       autocompleteItems: [],
       loading: false,
-      searchInput:  "",
+      searchInput: "",
       origin: "", // Add this line if origin is used in the template
       localSelectedItem: null,
     };
   },
+  computed: {
+    iconColor() {
+      // Calculate the color based on the value of gpsCheck
+      return this.gpsCheck ? "red" : "white";
+    },
+  },
   watch: {
+    gpsCheck: function (newValue) {
+      if (newValue) {
+        this.$root.$on("lat", this.lat);
+        this.$root.$on("lon", this.lon);
+        console.log("gpsCheck:", newValue);
+        this.$store.state.lon = "";
+        this.localSelectedItem.text = null;
+        this.searchInput = "";
+        this.setOriginToCurrentLocation();
+      } else {
+        // Don't forget to remove the event listener to avoid memory leaks
+        this.$root.$off("lat", this.lat);
+        this.$root.$off("lon", this.lon);
+        this.$store.state.lat = "";
+        this.$store.state.lon = "";
+        this.localSelectedItem = null;
+        this.searchInput = "";
+      }
+
+      // Emit an event to notify the parent when localSelectedItem changes
+      this.$emit("update:selectedItem", this.localSelectedItem);
+    },
+    localSelectedItem(newValue) {
+      // Emit an event to notify the parent when localSelectedItem changes
+      this.$emit("update:selectedItem", newValue);
+    },
     selectedItem(newValue) {
       // Update localSelectedItem when the prop changes
       this.localSelectedItem = newValue;
     },
     searchInput(newSearchInput) {
-    if (newSearchInput && newSearchInput.length >= this.minLength && !this.gpsCheck) {
-      this.onAutocompleteChange();
-    }
-  },
-    localSelectedItem(newValue) {
-      // Emit an event to notify the parent when localSelectedItem changes
-      this.$emit("update:selectedItem", newValue);
+      if (
+        newSearchInput &&
+        newSearchInput.length >= this.minLength &&
+        !this.gpsCheck
+      ) {
+        this.onAutocompleteChange();
+      }
     },
   },
   methods: {
+    setOriginToCurrentLocation() {
+      if (navigator.geolocation) {
+        var options = {
+          maximumAge: 0,
+          timeout: 30000,
+          enableHighAccuracy: true,
+        };
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            var lat = position.coords.latitude;
+            var lon = position.coords.longitude;
+
+            this.$store.commit("setLat", lat);
+            this.$store.commit("setLon", lon);
+
+            // Emit lat and lon events if needed
+            this.$emit("lat", this.lat);
+            this.$emit("lon", this.lon);
+          },
+          (error) => {
+            console.warn(`ERROR(${error.code}): ${error.message}`);
+          },
+          [options]
+        );
+      } else {
+        alert("User did not allow access to GPS location");
+      }
+    },
     onAutocompleteChange: async function (item) {
       // 'item' contains the selected item
       if (item) {
@@ -109,6 +199,10 @@ export default {
       } finally {
         this.loading = false;
       }
+    },
+    updateSelectedItem(newValue) {
+      // Handle the updated selected item from the autocomplete component
+      this.$emit("update:selectedItem", newValue);
     },
   },
 };

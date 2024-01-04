@@ -1,7 +1,10 @@
 <template>
   <v-app id="inspire">
-    <v-app-bar class="red lighten-1 white--text  d-flex justify-center " app>
-      <v-toolbar-title class="custom-title" >TRUCKMILES <span className='font-extralight'>&reg;</span></v-toolbar-title>
+    <v-app-bar class="red lighten-1 white--text d-flex justify-center" app>
+      <v-toolbar-title class="custom-title"
+        >TRUCKMILES
+        <span className="font-extralight">&reg;</span></v-toolbar-title
+      >
     </v-app-bar>
 
     <v-main>
@@ -25,7 +28,6 @@ import Footer from "./components/footer.vue";
 
 export default {
   components: { gmapsMap, Footer },
-  
 };
 </script>
 

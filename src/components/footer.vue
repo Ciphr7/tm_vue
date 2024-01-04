@@ -75,13 +75,13 @@
         </v-dialog></v-card-text>
 
         <v-card-text class="white--text pt-1 d-flex justify-center">
-          Powered by ProMiles
+          Powered by ProMiles  <span className='font-extralight'>&copy;</span>
         </v-card-text>
 
         <v-divider></v-divider>
 
         <v-card-text class="white--text d-flex justify-center">
-          <strong>TruckMiles -</strong>{{ new Date().getFullYear() }}
+          <strong>TruckMiles<span className='font-extralight'>&reg;</span> -</strong>{{ new Date().getFullYear() }}
         </v-card-text>
       </v-footer>
     </v-card>
