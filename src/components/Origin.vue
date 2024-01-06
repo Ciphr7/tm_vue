@@ -105,8 +105,7 @@ export default {
         this.$root.$on("lon", this.lon);
         console.log("gpsCheck:", newValue);
         this.$store.state.lon = "";
-        this.localSelectedItem.text = null;
-        this.searchInput = "";
+        
         this.setOriginToCurrentLocation();
       } else {
         // Don't forget to remove the event listener to avoid memory leaks
@@ -114,7 +113,7 @@ export default {
         this.$root.$off("lon", this.lon);
         this.$store.state.lat = "";
         this.$store.state.lon = "";
-        this.localSelectedItem = null;
+       // this.localSelectedItem = "";
         this.searchInput = "";
       }
 
@@ -140,6 +139,13 @@ export default {
     },
   },
   methods: {
+    updateSelectedItem(newValue) {
+      // Handle the updated selected item from the autocomplete component
+      this.$emit("update:selectedItem", newValue);
+      //this.selectedItem = null;
+      this.searchInput = "";
+      this.localSelectedItem = null;
+    },
     setOriginToCurrentLocation() {
       if (navigator.geolocation) {
         var options = {
@@ -200,10 +206,7 @@ export default {
         this.loading = false;
       }
     },
-    updateSelectedItem(newValue) {
-      // Handle the updated selected item from the autocomplete component
-      this.$emit("update:selectedItem", newValue);
-    },
+  
   },
 };
 </script>

@@ -9,8 +9,8 @@
             <br />
             <ul>
               <li
-                v-for="leg in $store.state.tresults.TripLegs"
-                :key="leg.LocationText + leg.UniqueIdentifier"
+                v-for="(leg, index) in $store.state.tresults.TripLegs"
+                :key="index"
               >
                 <p>{{ leg.LocationText }}<strong></strong></p>
               </li>
@@ -29,8 +29,9 @@
             <h3>Jurisdiction Mileage</h3>
             <ul>
               <li
-                v-for="mileage in $store.state.tresults.JurisdictionMileage"
-                :key="mileage.State"
+                v-for="(mileage, index) in $store.state.tresults
+                  .JurisdictionMileage"
+                :key="index"
               >
                 <p>
                   <strong>{{ mileage.State }}:</strong>
